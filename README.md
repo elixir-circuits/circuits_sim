@@ -39,19 +39,7 @@ Devices on I2C bus "i2c-1":
 iex>
 ```
 
-## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `circuits_sim` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:circuits_sim, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/circuits_sim>.
+You can then read and write to the I2C devices similar to how you'd interact
+with them for real. While they're obviously not real and have limitations, they
+can be super helpful in mocking I2C devices or debugging I2C interactions
+without hardware in the loop.
