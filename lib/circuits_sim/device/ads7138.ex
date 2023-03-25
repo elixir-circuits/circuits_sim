@@ -35,7 +35,7 @@ defmodule CircuitsSim.Device.ADS7138 do
   # All of these are piggy-backing off the fact that SimpleI2CServer is just
   # using GenServer.call/2 under the hood. So we just start our own I2C server,
   # use the same CircuitsSim.Bus, and then get the messages here so we can handle
-  # the special ADS7138 commmand+register way.
+  # the special ADS7138 command+register way.
   #
   # This is a bit hacky so maybe need to consider changing?
   @impl GenServer
@@ -64,6 +64,10 @@ defmodule CircuitsSim.Device.ADS7138 do
       end
 
     {:reply, :ok, %{state | current: current - 1}}
+  end
+
+  def handle_call({:write, <<>>}, _from, state) do
+    {:reply, :ok, state}
   end
 
   def handle_call({:write_read, <<@single_register_read, register>>, 1}, _from, state) do
