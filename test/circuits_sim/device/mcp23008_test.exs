@@ -2,7 +2,7 @@ defmodule CircuitsSim.Device.MCP23008Test do
   use ExUnit.Case
 
   alias CircuitsSim.Device.MCP23008
-  alias CircuitsSim.SimpleI2C
+  alias CircuitsSim.I2C.SimpleI2C
 
   test "reads and writes GPIOs" do
     mcp23008 = MCP23008.new()

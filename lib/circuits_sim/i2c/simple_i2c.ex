@@ -1,4 +1,4 @@
-defprotocol CircuitsSim.SimpleI2C do
+defprotocol CircuitsSim.I2C.SimpleI2C do
   @moduledoc """
   A protocol that makes register-based I2C devices easier to simulate
   """

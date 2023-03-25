@@ -3,8 +3,8 @@ defmodule CircuitsSim do
   Documentation for `CircuitsSim`.
   """
 
-  alias CircuitsSim.Backend
-  alias CircuitsSim.Bus
+  alias CircuitsSim.I2C.Backend
+  alias CircuitsSim.I2C.Bus
   alias CircuitsSim.DeviceRegistry
 
   @doc """

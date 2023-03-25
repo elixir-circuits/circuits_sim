@@ -6,8 +6,8 @@ defmodule CircuitsSim.Device.AT24C02 do
   EEPROM write pages. If you use a real AT24C02, make sure not to cross 8-byte
   boundaries when writing more than one byte.
   """
-  alias CircuitsSim.SimpleI2C
-  alias CircuitsSim.SimpleI2CServer
+  alias CircuitsSim.I2C.SimpleI2C
+  alias CircuitsSim.I2C.SimpleI2CServer
   alias CircuitsSim.Tools
 
   defstruct [:contents]

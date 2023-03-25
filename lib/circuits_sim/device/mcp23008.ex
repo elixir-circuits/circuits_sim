@@ -7,8 +7,8 @@ defmodule CircuitsSim.Device.MCP23008 do
   See the [datasheet](https://www.microchip.com/en-us/product/MCP23008) for details.
   Many features aren't implemented.
   """
-  alias CircuitsSim.SimpleI2C
-  alias CircuitsSim.SimpleI2CServer
+  alias CircuitsSim.I2C.SimpleI2C
+  alias CircuitsSim.I2C.SimpleI2CServer
 
   def child_spec(args) do
     device = __MODULE__.new()

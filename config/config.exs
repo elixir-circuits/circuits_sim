@@ -12,4 +12,4 @@ config :circuits_sim,
   }
 
 # Tell Circuits.I2C to default to simulated I2C buses
-config :circuits_i2c, default_backend: CircuitsSim.Backend
+config :circuits_i2c, default_backend: CircuitsSim.I2C.Backend

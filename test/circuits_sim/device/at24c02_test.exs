@@ -2,7 +2,7 @@ defmodule CircuitsSim.Device.AT24C02Test do
   use ExUnit.Case
 
   alias CircuitsSim.Device.AT24C02
-  alias CircuitsSim.SimpleI2C
+  alias CircuitsSim.I2C.SimpleI2C
 
   test "reads and writes EEPROM" do
     eeprom = AT24C02.new()

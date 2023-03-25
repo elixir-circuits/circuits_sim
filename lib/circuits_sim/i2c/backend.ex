@@ -1,11 +1,11 @@
-defmodule CircuitsSim.Backend do
+defmodule CircuitsSim.I2C.Backend do
   @moduledoc """
   Circuits.I2C backend that has a virtual GPIO Expander on it
   """
   @behaviour Circuits.I2C.Backend
 
   alias Circuits.I2C.Backend
-  alias CircuitsSim.Bus
+  alias CircuitsSim.I2C.Bus
   alias CircuitsSim.DeviceRegistry
 
   @doc """

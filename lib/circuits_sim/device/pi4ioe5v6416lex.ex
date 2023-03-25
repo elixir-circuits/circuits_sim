@@ -7,8 +7,8 @@ defmodule CircuitsSim.Device.PI4IOE5V6416LEX do
     See the datasheet for more information:
   https://www.mouser.com/datasheet/2/115/DIOD_S_A0006645136_1-2542969.pdf
   """
-  alias CircuitsSim.SimpleI2C
-  alias CircuitsSim.SimpleI2CServer
+  alias CircuitsSim.I2C.SimpleI2C
+  alias CircuitsSim.I2C.SimpleI2CServer
   alias CircuitsSim.Tools
 
   def child_spec(args) do

@@ -6,8 +6,8 @@ defmodule CircuitsSim.Device.B5ZE do
 
   See the [datasheet](https://abracon.com/Support/AppsManuals/Precisiontiming/Application%20Manual%20AB-RTCMC-32.768kHz-IBO5-S3.pdf) for details.
   """
-  alias CircuitsSim.SimpleI2C
-  alias CircuitsSim.SimpleI2CServer
+  alias CircuitsSim.I2C.SimpleI2C
+  alias CircuitsSim.I2C.SimpleI2CServer
   alias CircuitsSim.Tools
 
   def child_spec(args) do

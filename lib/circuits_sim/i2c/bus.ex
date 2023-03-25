@@ -1,10 +1,10 @@
-defmodule CircuitsSim.Bus do
+defmodule CircuitsSim.I2C.Bus do
   @moduledoc """
   Circuits.I2C bus that has a virtual GPIO Expander on it
   """
 
   alias Circuits.I2C.Bus
-  alias CircuitsSim.SimpleI2CServer
+  alias CircuitsSim.I2C.SimpleI2CServer
   alias CircuitsSim.Tools
 
   defstruct [:bus_name]
@@ -23,23 +23,23 @@ defmodule CircuitsSim.Bus do
 
   defimpl Bus do
     @impl Bus
-    def flags(%CircuitsSim.Bus{}) do
+    def flags(%CircuitsSim.I2C.Bus{}) do
       [:supports_empty_write]
     end
 
     @impl Bus
-    def read(%CircuitsSim.Bus{} = bus, address, count, _options) do
+    def read(%CircuitsSim.I2C.Bus{} = bus, address, count, _options) do
       SimpleI2CServer.read(bus.bus_name, address, count)
     end
 
     @impl Bus
-    def write(%CircuitsSim.Bus{} = bus, address, data, _options) do
+    def write(%CircuitsSim.I2C.Bus{} = bus, address, data, _options) do
       SimpleI2CServer.write(bus.bus_name, address, data)
     end
 
     @impl Bus
     def write_read(
-          %CircuitsSim.Bus{} = bus,
+          %CircuitsSim.I2C.Bus{} = bus,
           address,
           write_data,
           read_count,
@@ -49,6 +49,6 @@ defmodule CircuitsSim.Bus do
     end
 
     @impl Bus
-    def close(%CircuitsSim.Bus{}), do: :ok
+    def close(%CircuitsSim.I2C.Bus{}), do: :ok
   end
 end

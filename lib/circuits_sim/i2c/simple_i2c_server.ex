@@ -1,11 +1,11 @@
-defmodule CircuitsSim.SimpleI2CServer do
+defmodule CircuitsSim.I2C.SimpleI2CServer do
   @moduledoc false
 
   use GenServer
 
   alias Circuits.I2C
   alias CircuitsSim.DeviceRegistry
-  alias CircuitsSim.SimpleI2C
+  alias CircuitsSim.I2C.SimpleI2C
 
   defstruct [:register, :device]
 
