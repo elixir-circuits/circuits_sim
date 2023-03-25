@@ -14,7 +14,7 @@ defmodule CircuitsSim.Bus do
   def render(%__MODULE__{} = bus) do
     for address <- 0..127 do
       info = SimpleI2CServer.render(bus.bus_name, address)
-      hex_addr = Tools.int_to_hex(address)
+      hex_addr = Tools.hex_byte(address)
       if info != [], do: ["Device 0x#{hex_addr}: \n", info, "\n"], else: []
     end
     |> IO.ANSI.format()

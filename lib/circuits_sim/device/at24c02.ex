@@ -60,10 +60,10 @@ defmodule CircuitsSim.Device.AT24C02 do
         header,
         "\n",
         for i <- 0..255 do
-          front = if rem(i, 16) == 0, do: [Tools.int_to_hex(i), ": "], else: []
+          front = if rem(i, 16) == 0, do: [Tools.hex_byte(i), ": "], else: []
           v = elem(state.contents, i)
           term = if rem(i, 16) == 15, do: "\n", else: " "
-          [front, Tools.int_to_hex(v), term]
+          [front, Tools.hex_byte(v), term]
         end
       ]
     end

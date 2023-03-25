@@ -85,7 +85,7 @@ defmodule CircuitsSim.Device.ADS7138 do
       for {reg, data} <- state.registers do
         [
           "  ",
-          Tools.int_to_hex(reg),
+          Tools.hex_byte(reg),
           ": ",
           for(<<b::1 <- data>>, do: to_string(b)),
           " (",

@@ -1,8 +1,8 @@
 defmodule CircuitsSim.Tools do
   @moduledoc false
 
-  @spec int_to_hex(Integer.t()) :: String.t()
-  def int_to_hex(int) do
-    Integer.to_string(div(int, 16), 16) <> Integer.to_string(rem(int, 16), 16)
+  @spec hex_byte(byte()) :: String.t()
+  def hex_byte(x) when x >= 0 and x <= 255 do
+    Integer.to_string(div(x, 16), 16) <> Integer.to_string(rem(x, 16), 16)
   end
 end
