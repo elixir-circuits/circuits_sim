@@ -7,12 +7,12 @@ defmodule CircuitsSim.Device.MCP23008 do
   See the [datasheet](https://www.microchip.com/en-us/product/MCP23008) for details.
   Many features aren't implemented.
   """
-  alias CircuitsSim.SimpleI2C
-  alias CircuitsSim.SimpleI2CServer
+  alias CircuitsSim.I2C.I2CServer
+  alias CircuitsSim.I2C.SimpleI2CDevice
 
   def child_spec(args) do
     device = __MODULE__.new()
-    SimpleI2CServer.child_spec_helper(device, args)
+    I2CServer.child_spec_helper(device, args)
   end
 
   defstruct [
@@ -72,8 +72,8 @@ defmodule CircuitsSim.Device.MCP23008 do
     }
   end
 
-  defimpl SimpleI2C do
-    @impl SimpleI2C
+  defimpl SimpleI2CDevice do
+    @impl SimpleI2CDevice
     def write_register(state, 0, value), do: %{state | iodir: value}
     def write_register(state, 1, value), do: %{state | ipol: value}
     def write_register(state, 2, value), do: %{state | gpinten: value}
@@ -92,7 +92,7 @@ defmodule CircuitsSim.Device.MCP23008 do
     def write_register(state, 10, value), do: write_register(state, 9, value)
     def write_register(state, _other, _value), do: state
 
-    @impl SimpleI2C
+    @impl SimpleI2CDevice
     def read_register(state, 0), do: {state.iodir, state}
     def read_register(state, 1), do: {state.ipol, state}
     def read_register(state, 2), do: {state.gpinten, state}
@@ -106,7 +106,7 @@ defmodule CircuitsSim.Device.MCP23008 do
     def read_register(state, 10), do: {state.olat, state}
     def read_register(state, _other), do: {0, state}
 
-    @impl SimpleI2C
+    @impl SimpleI2CDevice
     def render(state) do
       {pin, io, values} =
         for i <- 7..0 do
@@ -121,7 +121,7 @@ defmodule CircuitsSim.Device.MCP23008 do
       ["     Pin: ", pin, "\n   IODIR: ", io, "\n    GPIO: ", values, "\n"]
     end
 
-    @impl SimpleI2C
+    @impl SimpleI2CDevice
     def handle_message(state, _message) do
       state
     end

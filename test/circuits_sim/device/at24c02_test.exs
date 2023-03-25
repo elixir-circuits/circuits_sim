@@ -2,25 +2,27 @@ defmodule CircuitsSim.Device.AT24C02Test do
   use ExUnit.Case
 
   alias CircuitsSim.Device.AT24C02
-  alias CircuitsSim.SimpleI2C
+  alias CircuitsSim.I2C.SimpleI2CDevice
 
   test "reads and writes EEPROM" do
     eeprom = AT24C02.new()
 
-    eeprom = SimpleI2C.write_register(eeprom, 0, 5)
-    {result, eeprom} = SimpleI2C.read_register(eeprom, 0)
+    eeprom = SimpleI2CDevice.write_register(eeprom, 0, 5)
+    {result, eeprom} = SimpleI2CDevice.read_register(eeprom, 0)
     assert result == 5
 
-    eeprom = SimpleI2C.write_register(eeprom, 255, 123)
-    {result, _eeprom} = SimpleI2C.read_register(eeprom, 255)
+    eeprom = SimpleI2CDevice.write_register(eeprom, 255, 123)
+    {result, _eeprom} = SimpleI2CDevice.read_register(eeprom, 255)
     assert result == 123
   end
 
   test "renders" do
     eeprom =
-      Enum.reduce(0..255, AT24C02.new(), fn i, acc -> SimpleI2C.write_register(acc, i, i) end)
+      Enum.reduce(0..255, AT24C02.new(), fn i, acc ->
+        SimpleI2CDevice.write_register(acc, i, i)
+      end)
 
-    actual = SimpleI2C.render(eeprom) |> IO.ANSI.format(false) |> IO.chardata_to_string()
+    actual = SimpleI2CDevice.render(eeprom) |> IO.ANSI.format(false) |> IO.chardata_to_string()
 
     expected = """
          0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F

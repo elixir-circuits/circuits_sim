@@ -1,12 +1,12 @@
-defmodule CircuitsSim.Backend do
+defmodule CircuitsSim.I2C.Backend do
   @moduledoc """
-  Circuits.I2C backend that has a virtual GPIO Expander on it
+  Circuits.I2C backend for virtual I2C devices
   """
   @behaviour Circuits.I2C.Backend
 
   alias Circuits.I2C.Backend
-  alias CircuitsSim.Bus
   alias CircuitsSim.DeviceRegistry
+  alias CircuitsSim.I2C.Bus
 
   @doc """
   Return the I2C bus names on this system

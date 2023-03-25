@@ -1,10 +1,8 @@
-defmodule CircuitsSim.Bus do
-  @moduledoc """
-  Circuits.I2C bus that has a virtual GPIO Expander on it
-  """
+defmodule CircuitsSim.I2C.Bus do
+  @moduledoc false
 
   alias Circuits.I2C.Bus
-  alias CircuitsSim.SimpleI2CServer
+  alias CircuitsSim.I2C.I2CServer
   alias CircuitsSim.Tools
 
   defstruct [:bus_name]
@@ -13,7 +11,7 @@ defmodule CircuitsSim.Bus do
   @spec render(t()) :: String.t()
   def render(%__MODULE__{} = bus) do
     for address <- 0..127 do
-      info = SimpleI2CServer.render(bus.bus_name, address)
+      info = I2CServer.render(bus.bus_name, address)
       hex_addr = Tools.hex_byte(address)
       if info != [], do: ["Device 0x#{hex_addr}: \n", info, "\n"], else: []
     end
@@ -23,32 +21,32 @@ defmodule CircuitsSim.Bus do
 
   defimpl Bus do
     @impl Bus
-    def flags(%CircuitsSim.Bus{}) do
+    def flags(%CircuitsSim.I2C.Bus{}) do
       [:supports_empty_write]
     end
 
     @impl Bus
-    def read(%CircuitsSim.Bus{} = bus, address, count, _options) do
-      SimpleI2CServer.read(bus.bus_name, address, count)
+    def read(%CircuitsSim.I2C.Bus{} = bus, address, count, _options) do
+      I2CServer.read(bus.bus_name, address, count)
     end
 
     @impl Bus
-    def write(%CircuitsSim.Bus{} = bus, address, data, _options) do
-      SimpleI2CServer.write(bus.bus_name, address, data)
+    def write(%CircuitsSim.I2C.Bus{} = bus, address, data, _options) do
+      I2CServer.write(bus.bus_name, address, data)
     end
 
     @impl Bus
     def write_read(
-          %CircuitsSim.Bus{} = bus,
+          %CircuitsSim.I2C.Bus{} = bus,
           address,
           write_data,
           read_count,
           _options
         ) do
-      SimpleI2CServer.write_read(bus.bus_name, address, write_data, read_count)
+      I2CServer.write_read(bus.bus_name, address, write_data, read_count)
     end
 
     @impl Bus
-    def close(%CircuitsSim.Bus{}), do: :ok
+    def close(%CircuitsSim.I2C.Bus{}), do: :ok
   end
 end

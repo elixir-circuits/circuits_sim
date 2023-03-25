@@ -7,13 +7,13 @@ defmodule CircuitsSim.Device.PI4IOE5V6416LEX do
     See the datasheet for more information:
   https://www.mouser.com/datasheet/2/115/DIOD_S_A0006645136_1-2542969.pdf
   """
-  alias CircuitsSim.SimpleI2C
-  alias CircuitsSim.SimpleI2CServer
+  alias CircuitsSim.I2C.I2CServer
+  alias CircuitsSim.I2C.SimpleI2CDevice
   alias CircuitsSim.Tools
 
   def child_spec(args) do
     device = __MODULE__.new()
-    SimpleI2CServer.child_spec_helper(device, args)
+    I2CServer.child_spec_helper(device, args)
   end
 
   defstruct registers: %{}
@@ -25,14 +25,14 @@ defmodule CircuitsSim.Device.PI4IOE5V6416LEX do
     %__MODULE__{registers: %{}}
   end
 
-  defimpl SimpleI2C do
-    @impl SimpleI2C
+  defimpl SimpleI2CDevice do
+    @impl SimpleI2CDevice
     def write_register(state, reg, value), do: put_in(state.registers[reg], <<value>>)
 
-    @impl SimpleI2C
+    @impl SimpleI2CDevice
     def read_register(state, reg), do: {state.registers[reg] || <<0>>, state}
 
-    @impl SimpleI2C
+    @impl SimpleI2CDevice
     def render(state) do
       for {reg, data} <- state.registers do
         [
@@ -47,7 +47,7 @@ defmodule CircuitsSim.Device.PI4IOE5V6416LEX do
       end
     end
 
-    @impl SimpleI2C
+    @impl SimpleI2CDevice
     def handle_message(state, _message) do
       state
     end
