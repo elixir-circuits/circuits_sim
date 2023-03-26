@@ -1,11 +1,11 @@
-defmodule CircuitsSim.I2C.Backend do
+defmodule CircuitsSim.SPI.Backend do
   @moduledoc """
-  Circuits.I2C backend for virtual I2C devices
+  Circuits.SPI backend for virtual SPI devices
   """
-  @behaviour Circuits.I2C.Backend
+  @behaviour Circuits.SPI.Backend
 
-  alias Circuits.I2C.Backend
-  alias CircuitsSim.I2C.Bus
+  alias Circuits.SPI.Backend
+  alias CircuitsSim.SPI.Bus
   alias CircuitsSim.DeviceRegistry
 
   @doc """

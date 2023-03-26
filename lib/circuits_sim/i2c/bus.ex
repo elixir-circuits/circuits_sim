@@ -1,7 +1,5 @@
 defmodule CircuitsSim.I2C.Bus do
-  @moduledoc """
-  Circuits.I2C bus that has a virtual GPIO Expander on it
-  """
+  @moduledoc false
 
   alias Circuits.I2C.Bus
   alias CircuitsSim.I2C.SimpleI2CServer
@@ -18,7 +16,7 @@ defmodule CircuitsSim.I2C.Bus do
       if info != [], do: ["Device 0x#{hex_addr}: \n", info, "\n"], else: []
     end
     |> IO.ANSI.format()
-    |> IO.iodata_to_binary()
+    |> IO.chardata_to_string()
   end
 
   defimpl Bus do

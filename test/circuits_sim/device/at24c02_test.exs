@@ -20,7 +20,7 @@ defmodule CircuitsSim.Device.AT24C02Test do
     eeprom =
       Enum.reduce(0..255, AT24C02.new(), fn i, acc -> SimpleI2C.write_register(acc, i, i) end)
 
-    actual = SimpleI2C.render(eeprom) |> IO.ANSI.format(false) |> IO.iodata_to_binary()
+    actual = SimpleI2C.render(eeprom) |> IO.ANSI.format(false) |> IO.chardata_to_string()
 
     expected = """
          0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
