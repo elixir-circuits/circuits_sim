@@ -3,6 +3,7 @@ defmodule CircuitsSim.I2C.I2CServer do
 
   use GenServer
 
+  alias Circuits.I2C
   alias CircuitsSim.DeviceRegistry
   alias CircuitsSim.I2C.I2CDevice
   alias CircuitsSim.I2C.SimpleI2CDevice

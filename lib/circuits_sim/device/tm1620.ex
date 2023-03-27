@@ -39,8 +39,11 @@ defmodule CircuitsSim.Device.TM1620 do
   end
 
   @doc """
-
+  Process a TM1620 command
   """
+  @spec command(binary(), t()) :: t()
+  def command(data, state)
+
   # Display mode
   def command(<<0::2, _::4, 0::2, _::binary>>, state), do: %{state | digits: 4}
   def command(<<0::2, _::4, 1::2, _::binary>>, state), do: %{state | digits: 5}
@@ -175,7 +178,7 @@ defmodule CircuitsSim.Device.TM1620 do
     end
   end
 
-  def leds_to_map(digits, data) do
+  defp leds_to_map(digits, data) do
     for segment <- 0..(digits - 1), reduce: %{} do
       acc ->
         row_data = :binary.part(data, segment * 2, 2)
@@ -183,15 +186,16 @@ defmodule CircuitsSim.Device.TM1620 do
     end
   end
 
-  defp led_status(acc, 4, segment, <<_, _::4, j::1, _::3>> = data) do
-    acc |> led_status(5, segment, data) |> Map.put({segment, 9}, j)
-  end
+  # Not used yet. Comment out to avoid Dialyzer warnings
+  # defp led_status(acc, 4, segment, <<_::8, _::4, j::1, _::3>> = data) do
+  #   acc |> led_status(5, segment, data) |> Map.put({segment, 9}, j)
+  # end
 
-  defp led_status(acc, 5, segment, <<_, _::5, i::1, _::2>> = data) do
-    acc |> led_status(6, segment, data) |> Map.put({segment, 8}, i)
-  end
+  # defp led_status(acc, 5, segment, <<_::8, _::5, i::1, _::2>> = data) do
+  #   acc |> led_status(6, segment, data) |> Map.put({segment, 8}, i)
+  # end
 
-  defp led_status(acc, 6, segment, <<h::1, g::1, f::1, e::1, d::1, c::1, b::1, a::1, _>>) do
+  defp led_status(acc, 6, segment, <<h::1, g::1, f::1, e::1, d::1, c::1, b::1, a::1, _::8>>) do
     Map.merge(
       acc,
       %{
