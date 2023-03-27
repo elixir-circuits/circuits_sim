@@ -5,9 +5,9 @@ defmodule CircuitsSim.Device.TM1620 do
   See the [datasheet](https://github.com/fhunleth/binary_clock/blob/main/datasheets/TM1620-English.pdf) for details.
   Many features aren't implemented.
   """
-  use GenServer
 
-  alias CircuitsSim.DeviceRegistry
+  alias CircuitsSim.SPI.SPIDevice
+  alias CircuitsSim.SPI.SPIServer
 
   @typedoc """
   Render mode is how to pretty print the expected LED output
@@ -20,71 +20,53 @@ defmodule CircuitsSim.Device.TM1620 do
   """
   @type render_mode() :: :grid | :seven_segment | :binary_clock
 
-  defstruct name: nil,
-            digits: 4,
+  defstruct digits: 4,
             mode: :auto,
             pulse16: 0,
             data: :binary.copy(<<0>>, 0xB),
             render: :grid
 
-  def start_link(args) do
-    bus_name = Keyword.fetch!(args, :bus_name)
-    address = 0
-    GenServer.start_link(__MODULE__, args, name: DeviceRegistry.via_name(bus_name, address))
+  @type t() :: %__MODULE__{}
+
+  def child_spec(args) do
+    device = __MODULE__.new()
+    SPIServer.child_spec_helper(device, args)
   end
 
-  @impl GenServer
-  def init(args) do
-    {:ok, %__MODULE__{name: args[:bus_name]}}
+  @spec new() :: t()
+  def new() do
+    %__MODULE__{}
   end
 
-  @impl GenServer
-  def handle_call({:transfer, data}, _from, state) do
-    # The device is write only, so just return zeros.
-    result = :binary.copy(<<0>>, byte_size(data))
-    {:reply, {:ok, result}, command(data, state)}
-  end
+  @doc """
 
-  def handle_call(:render, _from, state) do
-    result = [
-      "Mode: #{state.digits} digits, #{14 - state.digits} segments\n",
-      "Brightness: #{state.pulse16}/16\n",
-      case state.render do
-        :grid -> grid(state.digits, state.data)
-        :seven_segment -> seven_segment(state.data)
-        :binary_clock -> binary_clock(state.data)
-      end
-    ]
-
-    {:reply, result, state}
-  end
-
+  """
   # Display mode
-  defp command(<<0::2, _::4, 0::2, _::binary>>, state), do: %{state | digits: 4}
-  defp command(<<0::2, _::4, 1::2, _::binary>>, state), do: %{state | digits: 5}
-  defp command(<<0::2, _::4, 2::2, _::binary>>, state), do: %{state | digits: 6}
+  def command(<<0::2, _::4, 0::2, _::binary>>, state), do: %{state | digits: 4}
+  def command(<<0::2, _::4, 1::2, _::binary>>, state), do: %{state | digits: 5}
+  def command(<<0::2, _::4, 2::2, _::binary>>, state), do: %{state | digits: 6}
 
   # Data command
-  defp command(<<1::2, _::2, _::2, 0::2, _::binary>>, state), do: %{state | mode: :auto}
+  def command(<<1::2, _::2, _::2, 0::2, _::binary>>, state), do: %{state | mode: :auto}
 
   # Display control
-  defp command(<<2::2, _::2, 0::1, _::3, _::binary>>, state), do: %{state | pulse16: 0}
-  defp command(<<2::2, _::2, 1::1, 0::3, _::binary>>, state), do: %{state | pulse16: 1}
-  defp command(<<2::2, _::2, 1::1, 1::3, _::binary>>, state), do: %{state | pulse16: 2}
-  defp command(<<2::2, _::2, 1::1, 2::3, _::binary>>, state), do: %{state | pulse16: 4}
-  defp command(<<2::2, _::2, 1::1, 3::3, _::binary>>, state), do: %{state | pulse16: 10}
-  defp command(<<2::2, _::2, 1::1, 4::3, _::binary>>, state), do: %{state | pulse16: 11}
-  defp command(<<2::2, _::2, 1::1, 5::3, _::binary>>, state), do: %{state | pulse16: 12}
-  defp command(<<2::2, _::2, 1::1, 6::3, _::binary>>, state), do: %{state | pulse16: 13}
-  defp command(<<2::2, _::2, 1::1, 7::3, _::binary>>, state), do: %{state | pulse16: 14}
+  def command(<<2::2, _::2, 0::1, _::3, _::binary>>, state), do: %{state | pulse16: 0}
+  def command(<<2::2, _::2, 1::1, 0::3, _::binary>>, state), do: %{state | pulse16: 1}
+  def command(<<2::2, _::2, 1::1, 1::3, _::binary>>, state), do: %{state | pulse16: 2}
+  def command(<<2::2, _::2, 1::1, 2::3, _::binary>>, state), do: %{state | pulse16: 4}
+  def command(<<2::2, _::2, 1::1, 3::3, _::binary>>, state), do: %{state | pulse16: 10}
+  def command(<<2::2, _::2, 1::1, 4::3, _::binary>>, state), do: %{state | pulse16: 11}
+  def command(<<2::2, _::2, 1::1, 5::3, _::binary>>, state), do: %{state | pulse16: 12}
+  def command(<<2::2, _::2, 1::1, 6::3, _::binary>>, state), do: %{state | pulse16: 13}
+  def command(<<2::2, _::2, 1::1, 7::3, _::binary>>, state), do: %{state | pulse16: 14}
 
   # Address command
-  defp command(<<3::2, _::2, address::4, data::binary>>, state) when address < 12 do
+  def command(<<3::2, _::2, address::4, data::binary>>, state) when address < 12 do
     %{state | data: update_data(state.data, address, data)}
   end
 
   # Ignore anything else
-  defp command(_other, state), do: state
+  def command(_other, state), do: state
 
   defp update_data(data, _address, <<>>), do: data
   defp update_data(data, address, _updates) when address > 0xB, do: data
@@ -223,5 +205,34 @@ defmodule CircuitsSim.Device.TM1620 do
         {segment, 7} => h
       }
     )
+  end
+
+  defimpl SPIDevice do
+    alias CircuitsSim.Device.TM1620
+
+    @impl SPIDevice
+    def transfer(state, data) do
+      # The device is write only, so just return zeros.
+      result = :binary.copy(<<0>>, byte_size(data))
+      {result, TM1620.command(data, state)}
+    end
+
+    @impl SPIDevice
+    def render(state) do
+      [
+        "Mode: #{state.digits} digits, #{14 - state.digits} segments\n",
+        "Brightness: #{state.pulse16}/16\n",
+        case state.render do
+          :grid -> TM1620.grid(state.digits, state.data)
+          :seven_segment -> TM1620.seven_segment(state.data)
+          :binary_clock -> TM1620.binary_clock(state.data)
+        end
+      ]
+    end
+
+    @impl SPIDevice
+    def handle_message(state, _message) do
+      {:unimplemented, state}
+    end
   end
 end
