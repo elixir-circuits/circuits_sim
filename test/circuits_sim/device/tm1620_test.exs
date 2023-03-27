@@ -90,7 +90,7 @@ defmodule CircuitsSim.Device.TM1620Test do
 
   test "binary clock ascii art" do
     actual =
-      TM1620.clock(<<1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0>>)
+      TM1620.binary_clock(<<1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0>>)
       |> IO.ANSI.format(false)
       |> IO.chardata_to_string()
 

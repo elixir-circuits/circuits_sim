@@ -6,13 +6,13 @@ defmodule CircuitsSim.Device.B5ZE do
 
   See the [datasheet](https://abracon.com/Support/AppsManuals/Precisiontiming/Application%20Manual%20AB-RTCMC-32.768kHz-IBO5-S3.pdf) for details.
   """
-  alias CircuitsSim.I2C.SimpleI2C
-  alias CircuitsSim.I2C.SimpleI2CServer
+  alias CircuitsSim.I2C.I2CServer
+  alias CircuitsSim.I2C.SimpleI2CDevice
   alias CircuitsSim.Tools
 
   def child_spec(args) do
     device = __MODULE__.new()
-    SimpleI2CServer.child_spec_helper(device, args)
+    I2CServer.child_spec_helper(device, args)
   end
 
   defstruct registers: %{}
@@ -24,14 +24,14 @@ defmodule CircuitsSim.Device.B5ZE do
     %__MODULE__{registers: for(r <- 0x00..0x13, into: %{}, do: {r, <<0>>})}
   end
 
-  defimpl SimpleI2C do
-    @impl SimpleI2C
+  defimpl SimpleI2CDevice do
+    @impl SimpleI2CDevice
     def write_register(state, reg, value), do: put_in(state.registers[reg], <<value>>)
 
-    @impl SimpleI2C
+    @impl SimpleI2CDevice
     def read_register(state, reg), do: {state.registers[reg], state}
 
-    @impl SimpleI2C
+    @impl SimpleI2CDevice
     def render(state) do
       for {reg, data} <- state.registers do
         [
@@ -46,7 +46,7 @@ defmodule CircuitsSim.Device.B5ZE do
       end
     end
 
-    @impl SimpleI2C
+    @impl SimpleI2CDevice
     def handle_message(state, _message) do
       state
     end

@@ -6,8 +6,8 @@ defmodule CircuitsSim.Device.AT24C02 do
   EEPROM write pages. If you use a real AT24C02, make sure not to cross 8-byte
   boundaries when writing more than one byte.
   """
-  alias CircuitsSim.I2C.SimpleI2C
-  alias CircuitsSim.I2C.SimpleI2CServer
+  alias CircuitsSim.I2C.I2CServer
+  alias CircuitsSim.I2C.SimpleI2CDevice
   alias CircuitsSim.Tools
 
   defstruct [:contents]
@@ -32,7 +32,7 @@ defmodule CircuitsSim.Device.AT24C02 do
 
   def child_spec(args) do
     device = __MODULE__.new()
-    SimpleI2CServer.child_spec_helper(device, args)
+    I2CServer.child_spec_helper(device, args)
   end
 
   @spec new() :: t()
@@ -40,18 +40,18 @@ defmodule CircuitsSim.Device.AT24C02 do
     %__MODULE__{contents: Tuple.duplicate(0xFF, 256)}
   end
 
-  defimpl SimpleI2C do
-    @impl SimpleI2C
+  defimpl SimpleI2CDevice do
+    @impl SimpleI2CDevice
     def write_register(state, reg, value) do
       %{state | contents: put_elem(state.contents, reg, value)}
     end
 
-    @impl SimpleI2C
+    @impl SimpleI2CDevice
     def read_register(state, reg) do
       {elem(state.contents, reg), state}
     end
 
-    @impl SimpleI2C
+    @impl SimpleI2CDevice
     def render(state) do
       header = for i <- 0..15, do: ["  ", Integer.to_string(i, 16)]
 
@@ -68,7 +68,7 @@ defmodule CircuitsSim.Device.AT24C02 do
       ]
     end
 
-    @impl SimpleI2C
+    @impl SimpleI2CDevice
     def handle_message(state, _message) do
       state
     end

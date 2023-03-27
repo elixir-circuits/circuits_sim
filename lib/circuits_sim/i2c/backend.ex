@@ -5,8 +5,8 @@ defmodule CircuitsSim.I2C.Backend do
   @behaviour Circuits.I2C.Backend
 
   alias Circuits.I2C.Backend
-  alias CircuitsSim.I2C.Bus
   alias CircuitsSim.DeviceRegistry
+  alias CircuitsSim.I2C.Bus
 
   @doc """
   Return the I2C bus names on this system

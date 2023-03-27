@@ -2,7 +2,7 @@ defmodule CircuitsSim.I2C.Bus do
   @moduledoc false
 
   alias Circuits.I2C.Bus
-  alias CircuitsSim.I2C.SimpleI2CServer
+  alias CircuitsSim.I2C.I2CServer
   alias CircuitsSim.Tools
 
   defstruct [:bus_name]
@@ -11,7 +11,7 @@ defmodule CircuitsSim.I2C.Bus do
   @spec render(t()) :: String.t()
   def render(%__MODULE__{} = bus) do
     for address <- 0..127 do
-      info = SimpleI2CServer.render(bus.bus_name, address)
+      info = I2CServer.render(bus.bus_name, address)
       hex_addr = Tools.hex_byte(address)
       if info != [], do: ["Device 0x#{hex_addr}: \n", info, "\n"], else: []
     end
@@ -27,12 +27,12 @@ defmodule CircuitsSim.I2C.Bus do
 
     @impl Bus
     def read(%CircuitsSim.I2C.Bus{} = bus, address, count, _options) do
-      SimpleI2CServer.read(bus.bus_name, address, count)
+      I2CServer.read(bus.bus_name, address, count)
     end
 
     @impl Bus
     def write(%CircuitsSim.I2C.Bus{} = bus, address, data, _options) do
-      SimpleI2CServer.write(bus.bus_name, address, data)
+      I2CServer.write(bus.bus_name, address, data)
     end
 
     @impl Bus
@@ -43,7 +43,7 @@ defmodule CircuitsSim.I2C.Bus do
           read_count,
           _options
         ) do
-      SimpleI2CServer.write_read(bus.bus_name, address, write_data, read_count)
+      I2CServer.write_read(bus.bus_name, address, write_data, read_count)
     end
 
     @impl Bus

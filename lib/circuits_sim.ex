@@ -1,11 +1,11 @@
 defmodule CircuitsSim do
   @moduledoc """
-  Documentation for `CircuitsSim`.
+  Circuits Simulator
   """
 
+  alias CircuitsSim.DeviceRegistry
   alias CircuitsSim.I2C.Backend
   alias CircuitsSim.I2C.Bus
-  alias CircuitsSim.DeviceRegistry
 
   @doc """
   Show information about all simulated devices
