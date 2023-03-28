@@ -11,6 +11,7 @@ defmodule CircuitsSim.Device.PI4IOE5V6416LEX do
   alias CircuitsSim.I2C.SimpleI2CDevice
   alias CircuitsSim.Tools
 
+  @spec child_spec(I2CServer.init_args()) :: Supervisor.child_spec()
   def child_spec(args) do
     device = __MODULE__.new()
     I2CServer.child_spec_helper(device, args)

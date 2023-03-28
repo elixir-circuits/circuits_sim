@@ -10,10 +10,12 @@ defmodule CircuitsSim.I2C.I2CServer do
 
   defstruct [:device, :protocol, :register]
 
+  @type init_args :: [bus_name: String.t(), address: Circuits.I2C.address()]
+
   @doc """
   Helper for creating child_specs for simple I2C implementations
   """
-  @spec child_spec_helper(I2CDevice.t() | SimpleI2CDevice.t(), keyword()) :: %{
+  @spec child_spec_helper(I2CDevice.t() | SimpleI2CDevice.t(), init_args()) :: %{
           :id => __MODULE__,
           :start => {__MODULE__, :start_link, [[any()], ...]}
         }
