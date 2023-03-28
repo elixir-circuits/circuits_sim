@@ -8,10 +8,12 @@ defmodule CircuitsSim.SPI.SPIServer do
 
   defstruct [:device]
 
+  @type init_args :: [bus_name: String.t()]
+
   @doc """
   Helper for creating child_specs for simple I2C implementations
   """
-  @spec child_spec_helper(SPIDevice.t(), keyword()) :: %{
+  @spec child_spec_helper(SPIDevice.t(), init_args()) :: %{
           :id => __MODULE__,
           :start => {__MODULE__, :start_link, [[any()], ...]}
         }

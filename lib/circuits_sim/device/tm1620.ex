@@ -28,6 +28,7 @@ defmodule CircuitsSim.Device.TM1620 do
 
   @type t() :: %__MODULE__{}
 
+  @spec child_spec(SPIServer.init_args()) :: Supervisor.child_spec()
   def child_spec(args) do
     device = __MODULE__.new()
     SPIServer.child_spec_helper(device, args)
