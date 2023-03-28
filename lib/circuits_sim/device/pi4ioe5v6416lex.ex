@@ -30,7 +30,7 @@ defmodule CircuitsSim.Device.PI4IOE5V6416LEX do
     def write_register(state, reg, value), do: put_in(state.registers[reg], <<value>>)
 
     @impl SimpleI2CDevice
-    def read_register(state, reg), do: {state.registers[reg], state}
+    def read_register(state, reg), do: {state.registers[reg] || <<0>>, state}
 
     @impl SimpleI2CDevice
     def render(state) do
