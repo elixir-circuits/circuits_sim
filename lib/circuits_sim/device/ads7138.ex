@@ -21,7 +21,7 @@ defmodule CircuitsSim.Device.ADS7138 do
     I2CServer.child_spec_helper(device, args)
   end
 
-  @spec new() :: t()
+  @spec new() :: %__MODULE__{current: 0, registers: %{}}
   def new() do
     %__MODULE__{}
   end

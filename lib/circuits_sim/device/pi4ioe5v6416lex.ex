@@ -19,7 +19,7 @@ defmodule CircuitsSim.Device.PI4IOE5V6416LEX do
 
   defstruct registers: %{}
 
-  @type t() :: %__MODULE__{}
+  @type t() :: %__MODULE__{registers: %{}}
 
   @spec new() :: t()
   def new() do

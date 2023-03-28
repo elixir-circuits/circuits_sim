@@ -18,7 +18,7 @@ defmodule CircuitsSim.Device.B5ZE do
 
   defstruct registers: %{}
 
-  @type t() :: %__MODULE__{}
+  @type t() :: %__MODULE__{registers: map()}
 
   @spec new() :: t()
   def new() do

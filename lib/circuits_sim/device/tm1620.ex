@@ -26,7 +26,13 @@ defmodule CircuitsSim.Device.TM1620 do
             data: :binary.copy(<<0>>, 0xB),
             render: :grid
 
-  @type t() :: %__MODULE__{}
+  @type t() :: %__MODULE__{
+          data: <<_::88>>,
+          digits: pos_integer(),
+          mode: :auto,
+          pulse16: pos_integer(),
+          render: render_mode()
+        }
 
   @spec child_spec(SPIServer.init_args()) :: Supervisor.child_spec()
   def child_spec(args) do
@@ -34,7 +40,13 @@ defmodule CircuitsSim.Device.TM1620 do
     SPIServer.child_spec_helper(device, args)
   end
 
-  @spec new() :: t()
+  @spec new() :: %__MODULE__{
+          :data => <<_::88>>,
+          :digits => 4,
+          :mode => :auto,
+          :pulse16 => 0,
+          :render => :grid
+        }
   def new() do
     %__MODULE__{}
   end
