@@ -25,9 +25,17 @@ defmodule CircuitsSim.Application do
         {:ok, _} =
           DynamicSupervisor.start_child(
             CircuitSim.DeviceSupervisor,
-            {device, bus_name: bus_name, address: address}
+            device_spec(device, bus_name, address)
           )
       end)
     end)
+  end
+
+  defp device_spec({device, options}, bus_name, address) do
+    {device, Keyword.merge(options, bus_name: bus_name, address: address)}
+  end
+
+  defp device_spec(device, bus_name, address) do
+    {device, bus_name: bus_name, address: address}
   end
 end
