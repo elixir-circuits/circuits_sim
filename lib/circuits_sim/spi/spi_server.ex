@@ -37,7 +37,7 @@ defmodule CircuitsSim.SPI.SPIServer do
 
   # Helper for constructing the via_name for SPIDevice servers
   defp via_name(bus_name) do
-    DeviceRegistry.via_name(bus_name, 0)
+    DeviceRegistry.via_name(:spi, bus_name, 0)
   end
 
   # Helper for calling GenServer.call/2 for SPIDevice servers

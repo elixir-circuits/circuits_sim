@@ -15,7 +15,7 @@ defmodule CircuitsSim.I2C.Backend do
   """
   @impl Backend
   def bus_names(_options) do
-    DeviceRegistry.bus_names()
+    DeviceRegistry.bus_names(:i2c)
   end
 
   @doc """

@@ -15,7 +15,7 @@ defmodule CircuitsSim.SPI.Backend do
   """
   @impl Backend
   def bus_names(_options) do
-    DeviceRegistry.bus_names()
+    DeviceRegistry.bus_names(:spi)
   end
 
   @doc """

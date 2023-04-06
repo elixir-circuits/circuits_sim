@@ -41,7 +41,7 @@ defmodule CircuitsSim.I2C.I2CServer do
 
   # Helper for constructing the via_name for I2CDevice servers
   defp via_name(bus_name, address) do
-    DeviceRegistry.via_name(bus_name, address)
+    DeviceRegistry.via_name(:i2c, bus_name, address)
   end
 
   # Helper for calling GenServer.call/2 for I2CDevice servers
