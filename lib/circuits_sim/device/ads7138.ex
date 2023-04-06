@@ -15,7 +15,7 @@ defmodule CircuitsSim.Device.ADS7138 do
   defstruct registers: %{}, current: 0
   @type t() :: %__MODULE__{registers: map(), current: non_neg_integer()}
 
-  @spec child_spec(I2CServer.init_args()) :: Supervisor.child_spec()
+  @spec child_spec(keyword()) :: Supervisor.child_spec()
   def child_spec(args) do
     device = __MODULE__.new()
     I2CServer.child_spec_helper(device, args)

@@ -30,7 +30,7 @@ defmodule CircuitsSim.Device.AT24C02 do
              :_, :_, :_, :_}
         }
 
-  @spec child_spec(I2CServer.init_args()) :: Supervisor.child_spec()
+  @spec child_spec(keyword()) :: Supervisor.child_spec()
   def child_spec(args) do
     device = __MODULE__.new()
     I2CServer.child_spec_helper(device, args)
