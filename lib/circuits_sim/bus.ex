@@ -18,7 +18,7 @@ defmodule CircuitsSim.Bus do
       if info != [], do: ["Device 0x#{hex_addr}: \n", info, "\n"], else: []
     end
     |> IO.ANSI.format()
-    |> IO.iodata_to_binary()
+    |> IO.chardata_to_string()
   end
 
   defimpl Bus do
