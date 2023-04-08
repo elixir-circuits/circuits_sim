@@ -4,13 +4,16 @@ defmodule CircuitsSim do
   """
 
   alias CircuitsSim.DeviceRegistry
+  alias CircuitsSim.GPIO.GPIOServer
+  alias CircuitsSim.I2C.I2CServer
+  alias CircuitsSim.SPI.SPIServer
 
   @doc """
   Show information about all simulated devices
   """
   @spec info() :: :ok
   def info() do
-    [i2c_info(), spi_info()]
+    [i2c_info(), ?\n, spi_info(), ?\n, gpio_info()]
     |> IO.ANSI.format()
     |> IO.puts()
   end
@@ -21,15 +24,14 @@ defmodule CircuitsSim do
   end
 
   defp i2c_bus_info(bus_name) do
-    case CircuitsSim.I2C.Backend.open(bus_name, []) do
-      {:ok, i2c} ->
-        result = CircuitsSim.I2C.Bus.render(i2c)
-        Circuits.I2C.close(i2c)
-        ["=== ", bus_name, " ===\n", result]
+    result =
+      for address <- 0..127 do
+        info = I2CServer.render(bus_name, address)
+        hex_addr = CircuitsSim.Tools.hex_byte(address)
+        if info != [], do: ["Device 0x#{hex_addr}: \n", info, "\n"], else: []
+      end
 
-      _ ->
-        []
-    end
+    ["=== ", bus_name, " ===\n", result]
   end
 
   defp spi_info() do
@@ -38,14 +40,17 @@ defmodule CircuitsSim do
   end
 
   defp spi_bus_info(bus_name) do
-    case CircuitsSim.SPI.Backend.open(bus_name, []) do
-      {:ok, spi} ->
-        result = CircuitsSim.SPI.Bus.render(spi)
-        Circuits.SPI.close(spi)
-        ["=== ", bus_name, " ===\n", result]
+    result = SPIServer.render(bus_name)
+    ["=== ", bus_name, " ===\n", result]
+  end
 
-      _ ->
-        []
-    end
+  defp gpio_info() do
+    DeviceRegistry.bus_names(:gpio)
+    |> Enum.map(&pin_spec_info/1)
+  end
+
+  defp pin_spec_info(pin_spec) do
+    result = GPIOServer.render(pin_spec)
+    ["=== GPIO ", inspect(pin_spec), " ===\n", result]
   end
 end

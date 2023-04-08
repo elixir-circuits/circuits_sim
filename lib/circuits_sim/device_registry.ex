@@ -1,16 +1,17 @@
 defmodule CircuitsSim.DeviceRegistry do
   @moduledoc false
 
+  alias Circuits.GPIO
   alias Circuits.I2C
 
-  @type type() :: :i2c | :spi | :all
+  @type type() :: :i2c | :spi | :gpio | :all
 
-  @spec via_name(type(), String.t(), I2C.address()) :: {:via, Registry, tuple()}
+  @spec via_name(type(), String.t() | GPIO.pin_spec(), I2C.address()) :: {:via, Registry, tuple()}
   def via_name(type, bus, address) do
     {:via, Registry, {CircuitSim.DeviceRegistry, {type, bus, address}}}
   end
 
-  @spec bus_names(type()) :: [String.t()]
+  @spec bus_names(type()) :: [String.t() | GPIO.pin_spec()]
   def bus_names(type) do
     # The select returns [{{:i2c, "i2c-0", 32}}]
     Registry.select(CircuitSim.DeviceRegistry, [{{:"$1", :_, :_}, [], [{{:"$1"}}]}])
