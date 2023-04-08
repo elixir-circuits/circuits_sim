@@ -20,22 +20,21 @@ defmodule CircuitsSim.Application do
   defp add_devices() do
     config = Application.get_env(:circuits_sim, :config, %{})
 
-    Enum.each(config, fn {bus_name, devices} ->
-      Enum.each(devices, fn {address, device} ->
-        {:ok, _} =
-          DynamicSupervisor.start_child(
-            CircuitSim.DeviceSupervisor,
-            device_spec(device, bus_name, address)
-          )
-      end)
+    Enum.each(config, fn device_options ->
+      {:ok, _} =
+        DynamicSupervisor.start_child(
+          CircuitSim.DeviceSupervisor,
+          device_spec(device_options)
+        )
     end)
   end
 
-  defp device_spec({device, options}, bus_name, address) do
-    {device, Keyword.merge(options, bus_name: bus_name, address: address)}
+  defp device_spec(device) when is_atom(device) do
+    {device, []}
   end
 
-  defp device_spec(device, bus_name, address) do
-    {device, bus_name: bus_name, address: address}
+  defp device_spec({device, options} = device_options)
+       when is_atom(device) and is_list(options) do
+    device_options
   end
 end
