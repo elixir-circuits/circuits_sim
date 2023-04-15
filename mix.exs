@@ -43,9 +43,11 @@ defmodule CircuitsSim.MixProject do
 
   defp deps() do
     [
-      {:circuits_i2c, github: "elixir-circuits/circuits_i2c", branch: "configurable-backend"},
+      {:circuits_i2c,
+       github: "elixir-circuits/circuits_i2c", branch: "configurable-backend", override: true},
       {:circuits_spi, github: "elixir-circuits/circuits_spi", branch: "configurable-backend"},
       {:circuits_gpio, github: "elixir-circuits/circuits_gpio", branch: "configurable-backend"},
+      {:bmp280, "~> 0.2.12", only: [:dev, :test]},
       {:ex_doc, "~> 0.22", only: :docs, runtime: false},
       {:credo, "~> 1.6", only: :dev, runtime: false},
       {:dialyxir, "~> 1.2", only: :dev, runtime: false}

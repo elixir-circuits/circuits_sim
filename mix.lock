@@ -1,4 +1,5 @@
 %{
+  "bmp280": {:hex, :bmp280, "0.2.12", "971a0e701a9124bd8b6092b40f59fdc7b15c5ad24894008aa7a666c65abb268d", [:mix], [{:circuits_i2c, "~> 0.3.0 or ~> 1.0", [hex: :circuits_i2c, repo: "hexpm", optional: false]}], "hexpm", "41dd2cf9d6936ec3affd90ac3ec88d8ab45efb5a6d52ecb527f9a361f2247498"},
   "bunt": {:hex, :bunt, "0.2.1", "e2d4792f7bc0ced7583ab54922808919518d0e57ee162901a16a1b6664ef3b14", [:mix], [], "hexpm", "a330bfb4245239787b15005e66ae6845c9cd524a288f0d141c148b02603777a5"},
   "circuits_gpio": {:git, "https://github.com/elixir-circuits/circuits_gpio.git", "85700e3382ec6bf328f96b1d48fb17d316ad1576", [branch: "configurable-backend"]},
   "circuits_i2c": {:git, "https://github.com/elixir-circuits/circuits_i2c.git", "cb510ef6d91700d422caec4c9705628b55e72ea0", [branch: "configurable-backend"]},
