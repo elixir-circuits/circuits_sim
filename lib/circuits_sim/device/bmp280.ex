@@ -37,10 +37,10 @@ defmodule CircuitsSim.Device.BMP280 do
   end
 
   defp reg(:sensor_type), do: 0xD0
-  defp sensor_type_value(:bmp180), do: <<0x55>>
-  defp sensor_type_value(:bmp280), do: <<0x58>>
+  # defp sensor_type_value(:bmp180), do: <<0x55>>
+  # defp sensor_type_value(:bmp280), do: <<0x58>>
   defp sensor_type_value(:bme280), do: <<0x60>>
-  defp sensor_type_value(:bme680), do: <<0x61>>
+  # defp sensor_type_value(:bme680), do: <<0x61>>
 
   defp put_calibration_registers(%{} = registers) do
     [
