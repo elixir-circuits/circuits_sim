@@ -50,6 +50,8 @@ defmodule CircuitsSim.MixProject do
       {:bmp280, "~> 0.2.12", only: [:dev, :test]},
       {:sgp30, github: "jjcarstens/sgp30", branch: "main", only: [:dev, :test]},
       {:cerlc, "~> 0.2.1"},
+      {:sht4x,
+       github: "mnishiguchi/sht4x", branch: "mnishiguchi/sim-support", only: [:dev, :test]},
       {:ex_doc, "~> 0.22", only: :docs, runtime: false},
       {:credo, "~> 1.6", only: :dev, runtime: false},
       {:dialyxir, "~> 1.2", only: :dev, runtime: false}
