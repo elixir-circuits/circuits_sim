@@ -9,7 +9,7 @@ defmodule CircuitsSim.MixProject do
     [
       app: :circuits_sim,
       version: @version,
-      elixir: "~> 1.10",
+      elixir: "~> 1.11",
       description: @description,
       package: package(),
       source_url: @source_url,
