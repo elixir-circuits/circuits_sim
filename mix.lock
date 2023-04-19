@@ -1,6 +1,7 @@
 %{
   "bmp280": {:hex, :bmp280, "0.2.12", "971a0e701a9124bd8b6092b40f59fdc7b15c5ad24894008aa7a666c65abb268d", [:mix], [{:circuits_i2c, "~> 0.3.0 or ~> 1.0", [hex: :circuits_i2c, repo: "hexpm", optional: false]}], "hexpm", "41dd2cf9d6936ec3affd90ac3ec88d8ab45efb5a6d52ecb527f9a361f2247498"},
   "bunt": {:hex, :bunt, "0.2.1", "e2d4792f7bc0ced7583ab54922808919518d0e57ee162901a16a1b6664ef3b14", [:mix], [], "hexpm", "a330bfb4245239787b15005e66ae6845c9cd524a288f0d141c148b02603777a5"},
+  "cerlc": {:hex, :cerlc, "0.2.1", "cfe0880aa049ebcca079ca49578055aa48e7f2e9ed8ae08bd1f919d59015d03f", [:rebar3], [], "hexpm", "37f0d74a4277dcbaf64c7c47e9953dcc8060d26d86bb466ab2a86928e0181a7d"},
   "circuits_gpio": {:git, "https://github.com/elixir-circuits/circuits_gpio.git", "85700e3382ec6bf328f96b1d48fb17d316ad1576", [branch: "configurable-backend"]},
   "circuits_i2c": {:git, "https://github.com/elixir-circuits/circuits_i2c.git", "cb510ef6d91700d422caec4c9705628b55e72ea0", [branch: "configurable-backend"]},
   "circuits_spi": {:git, "https://github.com/elixir-circuits/circuits_spi.git", "e218fae2cf9a319f042a1d3bef6a8ee2445465a9", [branch: "configurable-backend"]},
@@ -16,4 +17,6 @@
   "makeup_elixir": {:hex, :makeup_elixir, "0.16.1", "cc9e3ca312f1cfeccc572b37a09980287e243648108384b97ff2b76e505c3555", [:mix], [{:makeup, "~> 1.0", [hex: :makeup, repo: "hexpm", optional: false]}, {:nimble_parsec, "~> 1.2.3 or ~> 1.3", [hex: :nimble_parsec, repo: "hexpm", optional: false]}], "hexpm", "e127a341ad1b209bd80f7bd1620a15693a9908ed780c3b763bccf7d200c767c6"},
   "makeup_erlang": {:hex, :makeup_erlang, "0.1.1", "3fcb7f09eb9d98dc4d208f49cc955a34218fc41ff6b84df7c75b3e6e533cc65f", [:mix], [{:makeup, "~> 1.0", [hex: :makeup, repo: "hexpm", optional: false]}], "hexpm", "174d0809e98a4ef0b3309256cbf97101c6ec01c4ab0b23e926a9e17df2077cbb"},
   "nimble_parsec": {:hex, :nimble_parsec, "1.3.0", "9e18a119d9efc3370a3ef2a937bf0b24c088d9c4bf0ba9d7c3751d49d347d035", [:mix], [], "hexpm", "7977f183127a7cbe9346981e2f480dc04c55ffddaef746bd58debd566070eef8"},
+  "sgp30": {:hex, :sgp30, "0.2.2", "f0f380338ec341a1986066efe8dd22ab478a1188553aafb965cf74fe6c261e1e", [:mix], [{:cerlc, "~> 0.2.0", [hex: :cerlc, repo: "hexpm", optional: false]}, {:circuits_i2c, "~> 0.3 or ~> 1.0", [hex: :circuits_i2c, repo: "hexpm", optional: false]}, {:telemetry, "~> 0.4 or ~> 1.0", [hex: :telemetry, repo: "hexpm", optional: false]}], "hexpm", "11bc43052c1748423a97cbde6d22ca91d815b5c3b14bab7338ede1105e5f296d"},
+  "telemetry": {:hex, :telemetry, "1.2.1", "68fdfe8d8f05a8428483a97d7aab2f268aaff24b49e0f599faa091f1d4e7f61c", [:rebar3], [], "hexpm", "dad9ce9d8effc621708f99eac538ef1cbe05d6a874dd741de2e689c47feafed5"},
 }
