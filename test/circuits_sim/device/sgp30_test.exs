@@ -4,8 +4,10 @@ defmodule CircuitsSim.Device.SGP30Test do
   test "measurement" do
     {:ok, sgp_pid} = SGP30.start_link(bus_name: "i2c-1")
 
-    # Wait until first measurement
-    Process.sleep(1000)
+    # SGP30 requires measurements at specific intervals, so it may take 900ms on startup
+    # before the first one. Since this is a mock device and we don't want
+    # to wait in tests, just send the message to force the measurement now
+    send(sgp_pid, :measure)
 
     assert %SGP30{
              address: 88,
