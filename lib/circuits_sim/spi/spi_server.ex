@@ -69,6 +69,11 @@ defmodule CircuitsSim.SPI.SPIServer do
     gen_call(bus_name, :render)
   end
 
+  @spec send_message(String.t(), any()) :: any()
+  def send_message(bus_name, message) do
+    GenServer.call(via_name(bus_name), {:send_message, message})
+  end
+
   @impl GenServer
   def init(init_args) do
     device = Keyword.fetch!(init_args, :device)
@@ -84,5 +89,10 @@ defmodule CircuitsSim.SPI.SPIServer do
 
   def handle_call(:render, _from, state) do
     {:reply, SPIDevice.render(state.device), state}
+  end
+
+  def handle_call({:send_message, message}, _from, state) do
+    {result, new_device} = SPIDevice.handle_message(state.device, message)
+    {:reply, result, %{state | device: new_device}}
   end
 end
