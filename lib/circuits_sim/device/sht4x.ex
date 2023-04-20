@@ -10,8 +10,8 @@ defmodule CircuitsSim.Device.SHT4X do
   alias CircuitsSim.I2C.I2CServer
   alias CircuitsSim.Tools
 
-  defstruct current: 0
-  @type t() :: %__MODULE__{current: non_neg_integer()}
+  defstruct current: nil
+  @type t() :: %__MODULE__{current: atom()}
 
   @spec child_spec(keyword()) :: Supervisor.child_spec()
   def child_spec(args) do
@@ -19,7 +19,7 @@ defmodule CircuitsSim.Device.SHT4X do
     I2CServer.child_spec_helper(device, args)
   end
 
-  @spec new() :: %__MODULE__{current: 0}
+  @spec new() :: t()
   def new() do
     %__MODULE__{}
   end
@@ -27,49 +27,32 @@ defmodule CircuitsSim.Device.SHT4X do
   ## protocol implementation
 
   defimpl I2CDevice do
-    @cmd_serial_number 0x89
-    @cmd_measure_high_repeatability 0xFD
-    @cmd_measure_medium_repeatability 0xF6
-    @cmd_measure_low_repeatability 0xE0
-
     @impl I2CDevice
     def read(%{current: :serial_number} = state, 6) do
-      {<<15, 186, 124, 249, 143, 14>>, %{state | current: 0}}
+      {<<15, 186, 124, 249, 143, 14>>, %{state | current: nil}}
     end
 
     def read(%{current: :measure_high_repeatability} = state, 6) do
-      {<<105, 234, 13, 109, 6, 50>>, %{state | current: 0}}
+      {random_raw_sample(), %{state | current: nil}}
     end
 
     def read(%{current: :measure_medium_repeatability} = state, 6) do
-      {<<105, 234, 13, 108, 239, 143>>, %{state | current: 0}}
+      {random_raw_sample(), %{state | current: nil}}
     end
 
     def read(%{current: :measure_low_repeatability} = state, 6) do
-      {<<105, 219, 249, 108, 200, 158>>, %{state | current: 0}}
+      {random_raw_sample(), %{state | current: nil}}
     end
 
     def read(state, 6) do
-      {<<0, 0, 0, 0, 0, 0>>, %{state | current: 0}}
+      {<<0, 0, 0, 0, 0, 0>>, %{state | current: nil}}
     end
 
     @impl I2CDevice
-    def write(state, <<0x89>>) do
-      %{state | current: :serial_number}
-    end
-
-    def write(state, <<0xFD>>) do
-      %{state | current: :measure_high_repeatability}
-    end
-
-    def write(state, <<0xF6>>) do
-      %{state | current: :measure_medium_repeatability}
-    end
-
-    def write(state, <<0xE0>>) do
-      %{state | current: :measure_low_repeatability}
-    end
-
+    def write(state, <<0x89>>), do: %{state | current: :serial_number}
+    def write(state, <<0xFD>>), do: %{state | current: :measure_high_repeatability}
+    def write(state, <<0xF6>>), do: %{state | current: :measure_medium_repeatability}
+    def write(state, <<0xE0>>), do: %{state | current: :measure_low_repeatability}
     def write(state, _), do: state
 
     @impl I2CDevice
@@ -82,8 +65,22 @@ defmodule CircuitsSim.Device.SHT4X do
     end
 
     @impl I2CDevice
-    def handle_message(state, _message) do
-      {:not_implemented, state}
+    def handle_message(state, _message), do: {:not_implemented, state}
+
+    defp random_raw_sample() do
+      measurement_to_raw(random_humidity_rh(), random_temperature_c())
+    end
+
+    defp random_humidity_rh(), do: 47 + :rand.uniform()
+    defp random_temperature_c(), do: 27 + :rand.uniform()
+
+    defp measurement_to_raw(humidity_rh, temperature_c) do
+      raw_rh = trunc((humidity_rh + 6) * (0xFFFF - 1) / 125)
+      raw_t = trunc((temperature_c + 45) * (0xFFFF - 1) / 175)
+      crc1 = SHT4X.Calc.checksum(<<raw_t::16>>)
+      crc2 = SHT4X.Calc.checksum(<<raw_rh::16>>)
+
+      <<raw_t::16, crc1, raw_rh::16, crc2>>
     end
   end
 end

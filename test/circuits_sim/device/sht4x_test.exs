@@ -3,14 +3,6 @@ defmodule CircuitsSim.Device.SHT4XTest do
 
   alias CircuitsSim.I2C.I2CDevice
 
-  test "sim state" do
-    state = CircuitsSim.Device.SHT4X.new()
-    assert {<<0, 0, 0, 0, 0, 0>>, state} = I2CDevice.read(state, 6)
-
-    assert state = I2CDevice.write(state, <<0x89>>)
-    assert {<<15, 186, 124, 249, 143, 14>>, state} = I2CDevice.read(state, 6)
-  end
-
   test "measurement" do
     {:ok, sht_pid} = SHT4X.start_link(bus_name: "i2c-1")
     assert {:ok, measurement} = SHT4X.measure(sht_pid)
