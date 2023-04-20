@@ -4,14 +4,14 @@ defmodule CircuitsSim.Device.SHT4X do
 
   Typically found at 0x44
   See the [datasheet](https://cdn-learn.adafruit.com/assets/assets/000/099/223/original/Sensirion_Humidity_Sensors_SHT4x_Datasheet.pdf) for details.
-  Many features aren't implemented.
+
+  Call `set_humidity_rh/3` and `set_temperature_c/3` to change the state of the sensor.
   """
   alias CircuitsSim.I2C.I2CDevice
   alias CircuitsSim.I2C.I2CServer
-  alias CircuitsSim.Tools
 
-  defstruct current: nil
-  @type t() :: %__MODULE__{current: atom()}
+  defstruct current: nil, humidity_rh: 50.0, temperature_c: 20.0
+  @type t() :: %__MODULE__{current: atom(), humidity_rh: float(), temperature_c: float()}
 
   @spec child_spec(keyword()) :: Supervisor.child_spec()
   def child_spec(args) do
@@ -24,6 +24,16 @@ defmodule CircuitsSim.Device.SHT4X do
     %__MODULE__{}
   end
 
+  @spec set_humidity_rh(String.t(), Circuits.I2C.address(), float()) :: :ok
+  def set_humidity_rh(bus_name, address, humidity_rh) when is_number(humidity_rh) do
+    I2CServer.send_message(bus_name, address, {:set_humidity_rh, humidity_rh})
+  end
+
+  @spec set_temperature_c(String.t(), Circuits.I2C.address(), float()) :: :ok
+  def set_temperature_c(bus_name, address, temperature_c) when is_number(temperature_c) do
+    I2CServer.send_message(bus_name, address, {:set_temperature_c, temperature_c})
+  end
+
   ## protocol implementation
 
   defimpl I2CDevice do
@@ -33,15 +43,15 @@ defmodule CircuitsSim.Device.SHT4X do
     end
 
     def read(%{current: :measure_high_repeatability} = state, 6) do
-      {random_raw_sample(), %{state | current: nil}}
+      {raw_sample(state), %{state | current: nil}}
     end
 
     def read(%{current: :measure_medium_repeatability} = state, 6) do
-      {random_raw_sample(), %{state | current: nil}}
+      {raw_sample(state), %{state | current: nil}}
     end
 
     def read(%{current: :measure_low_repeatability} = state, 6) do
-      {random_raw_sample(), %{state | current: nil}}
+      {raw_sample(state), %{state | current: nil}}
     end
 
     def read(state, 6) do
@@ -60,23 +70,23 @@ defmodule CircuitsSim.Device.SHT4X do
 
     @impl I2CDevice
     def render(state) do
-      # TODO: show something more useful
-      ["current: ", Tools.hex_byte(state.current), "\n"]
+      humidity_rh = Float.round(state.humidity_rh, 3)
+      temperature_c = Float.round(state.temperature_c, 3)
+      "Humidity RH: #{humidity_rh}, Temperature C: #{temperature_c}"
     end
 
     @impl I2CDevice
-    def handle_message(state, _message), do: {:not_implemented, state}
-
-    defp random_raw_sample() do
-      measurement_to_raw(random_humidity_rh(), random_temperature_c())
+    def handle_message(state, {:set_humidity_rh, humidity_rh}) do
+      {:ok, %{state | humidity_rh: humidity_rh}}
     end
 
-    defp random_humidity_rh(), do: 47 + :rand.uniform()
-    defp random_temperature_c(), do: 27 + :rand.uniform()
+    def handle_message(state, {:set_temperature_c, temperature_c}) do
+      {:ok, %{state | temperature_c: temperature_c}}
+    end
 
-    defp measurement_to_raw(humidity_rh, temperature_c) do
-      raw_rh = trunc((humidity_rh + 6) * (0xFFFF - 1) / 125)
-      raw_t = trunc((temperature_c + 45) * (0xFFFF - 1) / 175)
+    defp raw_sample(state) do
+      raw_rh = trunc((state.humidity_rh + 6) * (0xFFFF - 1) / 125)
+      raw_t = trunc((state.temperature_c + 45) * (0xFFFF - 1) / 175)
       crc1 = SHT4X.Calc.checksum(<<raw_t::16>>)
       crc2 = SHT4X.Calc.checksum(<<raw_rh::16>>)
 
