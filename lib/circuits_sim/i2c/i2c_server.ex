@@ -78,6 +78,11 @@ defmodule CircuitsSim.I2C.I2CServer do
     end
   end
 
+  @spec send_message(String.t(), I2C.address(), any()) :: any()
+  def send_message(bus_name, address, message) do
+    GenServer.call(via_name(bus_name, address), {:send_message, message})
+  end
+
   @impl GenServer
   def init(init_args) do
     device = Keyword.fetch!(init_args, :device)
@@ -118,6 +123,11 @@ defmodule CircuitsSim.I2C.I2CServer do
 
   def handle_call(:render, _from, state) do
     {:reply, do_render(state), state}
+  end
+
+  def handle_call({:send_message, message}, _from, state) do
+    {result, new_device} = I2CDevice.handle_message(state.device, message)
+    {:reply, result, %{state | device: new_device}}
   end
 
   defp do_read(%{protocol: I2CDevice} = state, count) do
