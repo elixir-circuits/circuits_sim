@@ -19,43 +19,48 @@ defmodule CircuitsSim.Device.SHT4X do
     I2CServer.child_spec_helper(device, args)
   end
 
-  @spec new() :: t()
+  @spec new() :: %__MODULE__{current: nil, humidity_rh: float(), temperature_c: float()}
+
   def new() do
     %__MODULE__{}
   end
 
   @spec set_humidity_rh(String.t(), Circuits.I2C.address(), float()) :: :ok
-  def set_humidity_rh(bus_name, address, humidity_rh) when is_number(humidity_rh) do
-    I2CServer.send_message(bus_name, address, {:set_humidity_rh, humidity_rh})
+  def set_humidity_rh(bus_name, address, value) when is_number(value) do
+    I2CServer.send_message(bus_name, address, {:set_humidity_rh, value})
   end
 
   @spec set_temperature_c(String.t(), Circuits.I2C.address(), float()) :: :ok
-  def set_temperature_c(bus_name, address, temperature_c) when is_number(temperature_c) do
-    I2CServer.send_message(bus_name, address, {:set_temperature_c, temperature_c})
+  def set_temperature_c(bus_name, address, value) when is_number(value) do
+    I2CServer.send_message(bus_name, address, {:set_temperature_c, value})
   end
 
   ## protocol implementation
 
   defimpl I2CDevice do
     @impl I2CDevice
-    def read(%{current: :serial_number} = state, 6) do
-      {<<15, 186, 124, 249, 143, 14>>, %{state | current: nil}}
+    def read(%{current: :serial_number} = state, count) do
+      result = <<15, 186, 124, 249, 143, 14>> |> trim_pad(count)
+      {result, %{state | current: nil}}
     end
 
-    def read(%{current: :measure_high_repeatability} = state, 6) do
-      {raw_sample(state), %{state | current: nil}}
+    def read(%{current: :measure_high_repeatability} = state, count) do
+      result = raw_sample(state) |> trim_pad(count)
+      {result, %{state | current: nil}}
     end
 
-    def read(%{current: :measure_medium_repeatability} = state, 6) do
-      {raw_sample(state), %{state | current: nil}}
+    def read(%{current: :measure_medium_repeatability} = state, count) do
+      result = raw_sample(state) |> trim_pad(count)
+      {result, %{state | current: nil}}
     end
 
-    def read(%{current: :measure_low_repeatability} = state, 6) do
-      {raw_sample(state), %{state | current: nil}}
+    def read(%{current: :measure_low_repeatability} = state, count) do
+      result = raw_sample(state) |> trim_pad(count)
+      {result, %{state | current: nil}}
     end
 
-    def read(state, 6) do
-      {<<0, 0, 0, 0, 0, 0>>, %{state | current: nil}}
+    def read(state, count) do
+      {:binary.copy(<<0>>, count), %{state | current: nil}}
     end
 
     @impl I2CDevice
@@ -66,7 +71,12 @@ defmodule CircuitsSim.Device.SHT4X do
     def write(state, _), do: state
 
     @impl I2CDevice
-    def write_read(state, _, _), do: {<<>>, state}
+    def write_read(state, _to_write, read_count) do
+      {:binary.copy(<<0>>, read_count), %{state | current: nil}}
+    end
+
+    defp trim_pad(x, count) when byte_size(x) >= count, do: :binary.part(x, 0, count)
+    defp trim_pad(x, count), do: x <> :binary.copy(<<0>>, count - byte_size(x))
 
     @impl I2CDevice
     def render(state) do
@@ -76,12 +86,12 @@ defmodule CircuitsSim.Device.SHT4X do
     end
 
     @impl I2CDevice
-    def handle_message(state, {:set_humidity_rh, humidity_rh}) do
-      {:ok, %{state | humidity_rh: humidity_rh}}
+    def handle_message(state, {:set_humidity_rh, value}) do
+      {:ok, %{state | humidity_rh: value}}
     end
 
-    def handle_message(state, {:set_temperature_c, temperature_c}) do
-      {:ok, %{state | temperature_c: temperature_c}}
+    def handle_message(state, {:set_temperature_c, value}) do
+      {:ok, %{state | temperature_c: value}}
     end
 
     defp raw_sample(state) do
@@ -89,7 +99,6 @@ defmodule CircuitsSim.Device.SHT4X do
       raw_t = trunc((state.temperature_c + 45) * (0xFFFF - 1) / 175)
       crc1 = SHT4X.Calc.checksum(<<raw_t::16>>)
       crc2 = SHT4X.Calc.checksum(<<raw_rh::16>>)
-
       <<raw_t::16, crc1, raw_rh::16, crc2>>
     end
   end
