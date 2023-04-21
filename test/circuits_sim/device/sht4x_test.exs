@@ -10,11 +10,11 @@ defmodule CircuitsSim.Device.SHT4XTest do
 
     I2CServer.send_message("i2c-1", 0x44, {:set_humidity_rh, 12.3})
     I2CServer.send_message("i2c-1", 0x44, {:set_temperature_c, 32.1})
-    assert I2CServer.render("i2c-1", 0x44) == "Humidity RH: 12.3, Temperature C: 32.1"
+    assert I2CServer.render("i2c-1", 0x44) == "Temperature: 32.1°C, Relative humidity: 12.3%"
 
     I2CServer.send_message("i2c-1", 0x44, {:set_humidity_rh, 50.0})
     I2CServer.send_message("i2c-1", 0x44, {:set_temperature_c, 20.0})
-    assert I2CServer.render("i2c-1", 0x44) == "Humidity RH: 50.0, Temperature C: 20.0"
+    assert I2CServer.render("i2c-1", 0x44) == "Temperature: 20.0°C, Relative humidity: 50.0%"
   end
 
   test "supports SHT4X package" do
