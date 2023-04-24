@@ -44,22 +44,22 @@ defmodule CircuitsSim.Device.SGP30 do
   end
 
   @spec set_tvoc_ppb(String.t(), Circuits.I2C.address(), integer()) :: :ok
-  def set_tvoc_ppb(bus_name, address, value) when is_number(value) do
+  def set_tvoc_ppb(bus_name, address, value) when is_integer(value) do
     I2CServer.send_message(bus_name, address, {:set_tvoc_ppb, value})
   end
 
   @spec set_co2_eq_ppm(String.t(), Circuits.I2C.address(), integer()) :: :ok
-  def set_co2_eq_ppm(bus_name, address, value) when is_number(value) do
+  def set_co2_eq_ppm(bus_name, address, value) when is_integer(value) do
     I2CServer.send_message(bus_name, address, {:set_co2_eq_ppm, value})
   end
 
   @spec set_h2_raw(String.t(), Circuits.I2C.address(), integer()) :: :ok
-  def set_h2_raw(bus_name, address, value) when is_number(value) do
+  def set_h2_raw(bus_name, address, value) when is_integer(value) do
     I2CServer.send_message(bus_name, address, {:set_h2_raw, value})
   end
 
   @spec set_ethanol_raw(String.t(), Circuits.I2C.address(), integer()) :: :ok
-  def set_ethanol_raw(bus_name, address, value) when is_number(value) do
+  def set_ethanol_raw(bus_name, address, value) when is_integer(value) do
     I2CServer.send_message(bus_name, address, {:set_ethanol_raw, value})
   end
 
