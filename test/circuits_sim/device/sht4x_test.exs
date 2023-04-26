@@ -2,26 +2,30 @@ defmodule CircuitsSim.Device.SHT4XTest do
   use ExUnit.Case
 
   alias CircuitsSim.I2C.I2CServer
+  alias CircuitsSim.Device.SHT4X, as: SHT4XSim
 
-  test "simple usage" do
-    device = CircuitsSim.Device.SHT4X.new()
-    init_arg = [bus_name: "i2c-1", address: 0x44, device: device]
-    I2CServer.start_link(init_arg)
+  @i2c_address 0x44
 
-    I2CServer.send_message("i2c-1", 0x44, {:set_humidity_rh, 12.3})
-    I2CServer.send_message("i2c-1", 0x44, {:set_temperature_c, 32.1})
-    assert I2CServer.render("i2c-1", 0x44) == "Temperature: 32.1°C, Relative humidity: 12.3%"
+  test "setting SHT4X state", %{test: test_name} do
+    i2c_bus = to_string(test_name)
+    start_supervised!({SHT4XSim, bus_name: i2c_bus, address: @i2c_address})
 
-    I2CServer.send_message("i2c-1", 0x44, {:set_humidity_rh, 50.0})
-    I2CServer.send_message("i2c-1", 0x44, {:set_temperature_c, 20.0})
-    assert I2CServer.render("i2c-1", 0x44) == "Temperature: 20.0°C, Relative humidity: 50.0%"
+    SHT4XSim.set_humidity_rh(i2c_bus, @i2c_address, 12.3)
+    SHT4XSim.set_temperature_c(i2c_bus, @i2c_address, 32.1)
+
+    assert I2CServer.render(i2c_bus, @i2c_address) ==
+             "Temperature: 32.1°C, Relative humidity: 12.3%"
   end
 
-  test "supports SHT4X package" do
-    {:ok, sht_pid} = SHT4X.start_link(bus_name: "i2c-1")
+  test "supports SHT4X package", %{test: test_name} do
+    i2c_bus = to_string(test_name)
+    start_supervised!({SHT4XSim, bus_name: i2c_bus, address: @i2c_address})
 
-    I2CServer.send_message("i2c-1", 0x44, {:set_humidity_rh, 33.3})
-    I2CServer.send_message("i2c-1", 0x44, {:set_temperature_c, 11.1})
+    sht_pid =
+      start_supervised!({SHT4X, bus_name: i2c_bus, address: @i2c_address, name: test_name})
+
+    SHT4XSim.set_temperature_c(i2c_bus, @i2c_address, 11.1)
+    SHT4XSim.set_humidity_rh(i2c_bus, @i2c_address, 33.3)
 
     {:ok, measurement} = SHT4X.measure(sht_pid)
     assert_in_delta measurement.humidity_rh, 33.3, 0.1
