@@ -66,6 +66,8 @@ defmodule CircuitsSim.Device.SGP30 do
   ## protocol implementation
 
   defimpl I2CDevice do
+    @crc_alg :cerlc.init({8, 0x31, 0xFF, 0x00, false})
+
     @impl I2CDevice
     def read(%{current: :iaq_measure} = state, count) do
       result = binary_for_measure(state) |> trim_pad(count)
@@ -129,23 +131,30 @@ defmodule CircuitsSim.Device.SGP30 do
     end
 
     defp binary_for_serial(_state) do
-      <<0, 0, 129, 1, 142, 16, 41, 222, 133>>
+      serial = <<0x0000018E29DE::48>>
+
+      serial |> add_crcs()
     end
 
     defp binary_for_measure(state) do
       co2_eq_ppm = state.co2_eq_ppm
       tvoc_ppb = state.tvoc_ppb
-      crc1 = SGP30.CRC.calculate(co2_eq_ppm)
-      crc2 = SGP30.CRC.calculate(tvoc_ppb)
-      <<co2_eq_ppm::16, crc1, tvoc_ppb::16, crc2>>
+
+      <<co2_eq_ppm::16, tvoc_ppb::16>> |> add_crcs()
     end
 
     defp binary_for_measure_raw(state) do
       h2_raw = state.h2_raw
       ethanol_raw = state.ethanol_raw
-      crc1 = SGP30.CRC.calculate(h2_raw)
-      crc2 = SGP30.CRC.calculate(ethanol_raw)
-      <<h2_raw::16, crc1, ethanol_raw::16, crc2>>
+
+      <<h2_raw::16, ethanol_raw::16>> |> add_crcs()
+    end
+
+    defp add_crcs(data) do
+      for <<uint16::16 <- data>>, into: <<>> do
+        crc = :cerlc.calc_crc(<<uint16::16>>, @crc_alg)
+        <<uint16::16, crc>>
+      end
     end
   end
 end
