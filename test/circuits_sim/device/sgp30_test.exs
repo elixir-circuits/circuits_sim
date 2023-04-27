@@ -20,7 +20,7 @@ defmodule CircuitsSim.Device.SGP30Test do
 
   test "supports SGP30 package", %{test: test_name} do
     i2c_bus = to_string(test_name)
-    start_supervised!({SGP30Sim, bus_name: i2c_bus, address: @i2c_address})
+    start_supervised!({SGP30Sim, bus_name: i2c_bus, address: @i2c_address, serial: 438})
 
     sgp_pid =
       start_supervised!({SGP30, bus_name: i2c_bus, address: @i2c_address, name: test_name})
@@ -41,5 +41,6 @@ defmodule CircuitsSim.Device.SGP30Test do
     assert sgp_state.co2_eq_ppm == 500
     assert sgp_state.h2_raw == 12345
     assert sgp_state.ethanol_raw == 23456
+    assert sgp_state.serial == 438
   end
 end

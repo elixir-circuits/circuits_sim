@@ -16,10 +16,11 @@ defmodule CircuitsSim.Device.SGP30 do
   alias CircuitsSim.I2C.I2CDevice
   alias CircuitsSim.I2C.I2CServer
 
-  defstruct current: nil, tvoc_ppb: 0, co2_eq_ppm: 0, h2_raw: 0, ethanol_raw: 0
+  defstruct current: nil, serial: 0, tvoc_ppb: 0, co2_eq_ppm: 0, h2_raw: 0, ethanol_raw: 0
 
   @type t() :: %__MODULE__{
           current: atom(),
+          serial: integer(),
           tvoc_ppb: integer(),
           co2_eq_ppm: integer(),
           h2_raw: integer(),
@@ -28,19 +29,24 @@ defmodule CircuitsSim.Device.SGP30 do
 
   @spec child_spec(keyword()) :: Supervisor.child_spec()
   def child_spec(args) do
-    device = __MODULE__.new()
+    device_options = Keyword.take(args, [:serial])
+    device = __MODULE__.new(device_options)
     I2CServer.child_spec_helper(device, args)
   end
 
-  @spec new() :: %__MODULE__{
+  @type options() :: [serial: integer()]
+
+  @spec new(options()) :: %__MODULE__{
           current: nil,
+          serial: 0,
           tvoc_ppb: 0,
           co2_eq_ppm: 0,
           h2_raw: 0,
           ethanol_raw: 0
         }
-  def new() do
-    %__MODULE__{}
+  def new(options \\ []) do
+    serial = options[:serial] || 0
+    %__MODULE__{serial: serial}
   end
 
   @spec set_tvoc_ppb(String.t(), Circuits.I2C.address(), integer()) :: :ok
@@ -130,10 +136,8 @@ defmodule CircuitsSim.Device.SGP30 do
       {:ok, %{state | ethanol_raw: value}}
     end
 
-    defp binary_for_serial(_state) do
-      serial = <<0x0000018E29DE::48>>
-
-      serial |> add_crcs()
+    defp binary_for_serial(state) do
+      <<state.serial::48>> |> add_crcs()
     end
 
     defp binary_for_measure(state) do
