@@ -6,121 +6,103 @@ defmodule CircuitsSim.Device.BMP280 do
   See the [datasheet](https://www.mouser.com/datasheet/2/783/BST-BME280-DS002-1509607.pdf) for details.
   Many features aren't implemented.
   """
+  alias CircuitsSim.I2C.I2CDevice
   alias CircuitsSim.I2C.I2CServer
-  alias CircuitsSim.I2C.SimpleI2CDevice
-  alias CircuitsSim.Tools
+
+  defstruct sensor_type: :bme280
+
+  @type t() :: %__MODULE__{sensor_type: atom()}
 
   @spec child_spec(keyword()) :: Supervisor.child_spec()
   def child_spec(args) do
-    device = __MODULE__.new()
+    device_options = Keyword.take(args, [:sensor_type])
+    device = __MODULE__.new(device_options)
     I2CServer.child_spec_helper(device, args)
   end
 
-  defstruct registers: %{}
+  @type options() :: [sensor_type: atom()]
 
-  @type t() :: %__MODULE__{registers: map()}
-
-  @spec new() :: t()
-  def new() do
-    %__MODULE__{registers: default_registers()}
+  @spec new(options()) :: %__MODULE__{sensor_type: atom()}
+  def new(options \\ []) do
+    sensor_type = options[:sensor_type] || :bme280
+    %__MODULE__{sensor_type: sensor_type}
   end
 
-  defp default_registers() do
-    for(r <- 0x00..0xFF, into: %{}, do: {r, <<0>>})
-    |> put_sensor_type_register()
-    |> put_calibration_registers()
-    |> put_raw_sample_registers()
-  end
-
-  defp put_sensor_type_register(%{} = registers) do
-    registers |> put_in([reg(:sensor_type)], sensor_type_value(:bme280))
-  end
-
-  defp reg(:sensor_type), do: 0xD0
-  # defp sensor_type_value(:bmp180), do: <<0x55>>
-  # defp sensor_type_value(:bmp280), do: <<0x58>>
-  defp sensor_type_value(:bme280), do: <<0x60>>
-  # defp sensor_type_value(:bme680), do: <<0x61>>
-
-  defp put_calibration_registers(%{} = registers) do
-    [
-      # calib00: 26 bytes from 0x88
-      {0x88, <<29>>},
-      {0x89, <<110>>},
-      {0x8A, <<173>>},
-      {0x8B, <<102>>},
-      {0x8C, <<50>>},
-      {0x8D, <<0>>},
-      {0x8E, <<27>>},
-      {0x8F, <<143>>},
-      {0x90, <<56>>},
-      {0x91, <<214>>},
-      {0x92, <<208>>},
-      {0x93, <<11>>},
-      {0x94, <<84>>},
-      {0x95, <<43>>},
-      {0x96, <<15>>},
-      {0x97, <<255>>},
-      {0x98, <<249>>},
-      {0x99, <<255>>},
-      {0x9A, <<12>>},
-      {0x9B, <<48>>},
-      {0x9C, <<32>>},
-      {0x9D, <<209>>},
-      {0x9E, <<136>>},
-      {0x9F, <<19>>},
-      {0xA0, <<0>>},
-      {0xA1, <<75>>},
-      # calib26: 7 bytes from 0xE1
-      {0xE1, <<82>>},
-      {0xE2, <<1>>},
-      {0xE3, <<0>>},
-      {0xE4, <<23>>},
-      {0xE5, <<44>>},
-      {0xE6, <<3>>},
-      {0xE7, <<30>>}
-    ]
-    |> Enum.into(registers)
-  end
-
-  defp put_raw_sample_registers(%{} = registers) do
-    [
-      # press_msb: 8 bytes from 0xF7
-      {0xF7, <<69>>},
-      {0xF8, <<89>>},
-      {0xF9, <<64>>},
-      {0xFA, <<130>>},
-      {0xFB, <<243>>},
-      {0xFC, <<0>>},
-      {0xFD, <<137>>},
-      {0xFE, <<109>>}
-    ]
-    |> Enum.into(registers)
+  @spec set_sensor_type(String.t(), Circuits.I2C.address(), atom()) :: :ok
+  def set_sensor_type(bus_name, address, value) when is_atom(value) do
+    I2CServer.send_message(bus_name, address, {:set_sensor_type, value})
   end
 
   ## protocol implementation
 
-  defimpl SimpleI2CDevice do
-    @impl SimpleI2CDevice
-    def write_register(state, reg, value), do: put_in(state.registers[reg], <<value>>)
+  defimpl I2CDevice do
+    @reg_sensor_type 0xD0
+    @reg_calib00 0x88
+    @reg_calib26 0xE1
+    @reg_press_msb 0xF7
 
-    @impl SimpleI2CDevice
-    def read_register(state, reg), do: {state.registers[reg], state}
-
-    @impl SimpleI2CDevice
-    def render(state) do
-      for {reg, data} <- state.registers do
-        [
-          "  ",
-          Tools.hex_byte(reg),
-          ": ",
-          for(<<b::1 <- data>>, do: to_string(b)),
-          "\n"
-        ]
-      end
+    @impl I2CDevice
+    def read(%{sensor_type: _any} = state, count) do
+      {:binary.copy(<<0>>, count), state}
     end
 
-    @impl SimpleI2CDevice
-    def handle_message(state, _message), do: state
+    @impl I2CDevice
+    def write(state, _), do: state
+
+    @impl I2CDevice
+    def write_read(%{sensor_type: _any} = state, <<@reg_sensor_type>>, read_count) do
+      result = binary_for_sensor_type(state) |> trim_pad(read_count)
+      {result, state}
+    end
+
+    def write_read(%{sensor_type: :bme280} = state, <<@reg_calib00>>, read_count) do
+      result = binary_for_calib00(state) |> trim_pad(read_count)
+      {result, state}
+    end
+
+    def write_read(%{sensor_type: :bme280} = state, <<@reg_calib26>>, read_count) do
+      result = binary_for_calib26(state) |> trim_pad(read_count)
+      {result, state}
+    end
+
+    def write_read(%{sensor_type: :bme280} = state, <<@reg_press_msb>>, read_count) do
+      result = binary_for_press_msb(state) |> trim_pad(read_count)
+      {result, state}
+    end
+
+    def write_read(%{sensor_type: _any} = state, _to_write, read_count) do
+      {:binary.copy(<<0>>, read_count), state}
+    end
+
+    defp trim_pad(x, count) when byte_size(x) >= count, do: :binary.part(x, 0, count)
+    defp trim_pad(x, count), do: x <> :binary.copy(<<0>>, count - byte_size(x))
+
+    @impl I2CDevice
+    def render(state) do
+      "Sensor type: #{state.sensor_type}"
+    end
+
+    @impl I2CDevice
+    def handle_message(state, {:set_sensor_type, value}) do
+      {:ok, %{state | sensor_type: value}}
+    end
+
+    defp binary_for_sensor_type(%{sensor_type: :bmp180}), do: <<0x55>>
+    defp binary_for_sensor_type(%{sensor_type: :bmp280}), do: <<0x58>>
+    defp binary_for_sensor_type(%{sensor_type: :bme280}), do: <<0x60>>
+    defp binary_for_sensor_type(%{sensor_type: :bme680}), do: <<0x61>>
+
+    defp binary_for_calib00(%{sensor_type: :bme280}) do
+      <<29, 110, 173, 102, 50, 0, 27, 143, 56, 214, 208, 11, 84, 43, 15, 255, 249, 255, 12, 48,
+        32, 209, 136, 19, 0, 75>>
+    end
+
+    defp binary_for_calib26(%{sensor_type: :bme280}) do
+      <<82, 1, 0, 23, 44, 3, 30>>
+    end
+
+    defp binary_for_press_msb(%{sensor_type: :bme280}) do
+      <<69, 89, 64, 130, 243, 0, 137, 109>>
+    end
   end
 end
