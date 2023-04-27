@@ -48,6 +48,8 @@ defmodule CircuitsSim.MixProject do
       {:circuits_spi, github: "elixir-circuits/circuits_spi", branch: "configurable-backend"},
       {:circuits_gpio, github: "elixir-circuits/circuits_gpio", branch: "configurable-backend"},
       {:bmp280, "~> 0.2.12", only: [:dev, :test]},
+      {:sgp30, github: "jjcarstens/sgp30", branch: "main", only: [:dev, :test]},
+      {:cerlc, "~> 0.2.1"},
       {:ex_doc, "~> 0.22", only: :docs, runtime: false},
       {:credo, "~> 1.6", only: :dev, runtime: false},
       {:dialyxir, "~> 1.2", only: :dev, runtime: false}
