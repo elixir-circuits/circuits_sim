@@ -95,8 +95,8 @@ defmodule CircuitsSim.Device.SHT4X do
     end
 
     defp raw_sample(state) do
-      raw_rh = trunc((state.humidity_rh + 6) * (0xFFFF - 1) / 125)
-      raw_t = trunc((state.temperature_c + 45) * (0xFFFF - 1) / 175)
+      raw_rh = round((state.humidity_rh + 6) * (0xFFFF - 1) / 125)
+      raw_t = round((state.temperature_c + 45) * (0xFFFF - 1) / 175)
       crc1 = SHT4X.Calc.checksum(<<raw_t::16>>)
       crc2 = SHT4X.Calc.checksum(<<raw_rh::16>>)
       <<raw_t::16, crc1, raw_rh::16, crc2>>
