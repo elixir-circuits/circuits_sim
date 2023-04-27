@@ -1,28 +1,34 @@
 defmodule CircuitsSim.Device.AHT20Test do
   use ExUnit.Case
 
-  test "simple usage", %{test: test_name} do
-    alias CircuitsSim.I2C.I2CServer
-    alias CircuitsSim.Device.AHT20
+  alias CircuitsSim.I2C.I2CServer
+  alias CircuitsSim.Device.AHT20, as: AHT20Sim
 
-    init_arg = [bus_name: "i2c-1", address: 0x38, device: AHT20.new(), name: test_name]
-    start_supervised({I2CServer, init_arg})
+  @i2c_address 0x38
 
-    AHT20.set_humidity_rh("i2c-1", 0x38, 12.3)
-    AHT20.set_temperature_c("i2c-1", 0x38, 32.1)
-    assert I2CServer.render("i2c-1", 0x38) == "Temperature: 32.1°C, Relative humidity: 12.3%"
+  test "setting AHT20 state", %{test: test_name} do
+    i2c_bus = to_string(test_name)
+    start_supervised!({AHT20Sim, bus_name: i2c_bus, address: @i2c_address})
 
-    AHT20.set_humidity_rh("i2c-1", 0x38, 50.0)
-    AHT20.set_temperature_c("i2c-1", 0x38, 20.0)
-    assert I2CServer.render("i2c-1", 0x38) == "Temperature: 20.0°C, Relative humidity: 50.0%"
+    AHT20Sim.set_humidity_rh(i2c_bus, @i2c_address, 12.3)
+    AHT20Sim.set_temperature_c(i2c_bus, @i2c_address, 32.1)
+
+    assert I2CServer.render(i2c_bus, @i2c_address) ==
+             "Temperature: 32.1°C, Relative humidity: 12.3%"
   end
 
   test "supports AHT20 package", %{test: test_name} do
-    init_arg = [bus_name: "i2c-1", address: 0x38, name: test_name]
-    start_supervised({AHT20, init_arg})
+    i2c_bus = to_string(test_name)
+    start_supervised!({AHT20Sim, bus_name: i2c_bus, address: @i2c_address})
 
-    {:ok, measurement} = AHT20.measure(test_name)
-    assert_in_delta measurement.humidity_rh, 50.0, 0.1
-    assert_in_delta measurement.temperature_c, 20.0, 0.1
+    aht_pid =
+      start_supervised!({AHT20, bus_name: i2c_bus, address: @i2c_address, name: test_name})
+
+    AHT20Sim.set_temperature_c(i2c_bus, @i2c_address, 11.1)
+    AHT20Sim.set_humidity_rh(i2c_bus, @i2c_address, 33.3)
+
+    {:ok, measurement} = AHT20.measure(aht_pid)
+    assert_in_delta measurement.humidity_rh, 33.3, 0.1
+    assert_in_delta measurement.temperature_c, 11.1, 0.1
   end
 end
