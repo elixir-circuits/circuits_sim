@@ -10,19 +10,33 @@ defmodule CircuitsSim.Device.SHT4X do
   alias CircuitsSim.I2C.I2CDevice
   alias CircuitsSim.I2C.I2CServer
 
-  defstruct current: nil, humidity_rh: 50.0, temperature_c: 20.0
-  @type t() :: %__MODULE__{current: atom(), humidity_rh: float(), temperature_c: float()}
+  defstruct current: nil, serial_number: 0, humidity_rh: 0.0, temperature_c: 0.0
+
+  @type t() :: %__MODULE__{
+          current: atom(),
+          serial_number: integer(),
+          humidity_rh: float(),
+          temperature_c: float()
+        }
 
   @spec child_spec(keyword()) :: Supervisor.child_spec()
   def child_spec(args) do
-    device = __MODULE__.new()
+    device_options = Keyword.take(args, [:serial_number])
+    device = __MODULE__.new(device_options)
     I2CServer.child_spec_helper(device, args)
   end
 
-  @spec new() :: %__MODULE__{current: nil, humidity_rh: float(), temperature_c: float()}
+  @type options() :: [serial_number: integer()]
 
-  def new() do
-    %__MODULE__{}
+  @spec new(options()) :: %__MODULE__{
+          current: nil,
+          serial_number: integer(),
+          humidity_rh: float(),
+          temperature_c: float()
+        }
+  def new(options \\ []) do
+    serial_number = options[:serial_number] || 0
+    %__MODULE__{serial_number: serial_number}
   end
 
   @spec set_humidity_rh(String.t(), Circuits.I2C.address(), float()) :: :ok
@@ -40,7 +54,7 @@ defmodule CircuitsSim.Device.SHT4X do
   defimpl I2CDevice do
     @impl I2CDevice
     def read(%{current: :serial_number} = state, count) do
-      result = <<15, 186, 124, 249, 143, 14>> |> trim_pad(count)
+      result = binary_for_serial_number(state) |> trim_pad(count)
       {result, %{state | current: nil}}
     end
 
@@ -92,6 +106,10 @@ defmodule CircuitsSim.Device.SHT4X do
 
     def handle_message(state, {:set_temperature_c, value}) do
       {:ok, %{state | temperature_c: value}}
+    end
+
+    defp binary_for_serial_number(state) do
+      <<state.serial_number::32>> |> add_crcs()
     end
 
     defp raw_sample(state) do
