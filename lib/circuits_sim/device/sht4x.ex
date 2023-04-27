@@ -39,12 +39,12 @@ defmodule CircuitsSim.Device.SHT4X do
     %__MODULE__{serial_number: serial_number}
   end
 
-  @spec set_humidity_rh(String.t(), Circuits.I2C.address(), float()) :: :ok
+  @spec set_humidity_rh(String.t(), Circuits.I2C.address(), number()) :: :ok
   def set_humidity_rh(bus_name, address, value) when is_number(value) do
     I2CServer.send_message(bus_name, address, {:set_humidity_rh, value})
   end
 
-  @spec set_temperature_c(String.t(), Circuits.I2C.address(), float()) :: :ok
+  @spec set_temperature_c(String.t(), Circuits.I2C.address(), number()) :: :ok
   def set_temperature_c(bus_name, address, value) when is_number(value) do
     I2CServer.send_message(bus_name, address, {:set_temperature_c, value})
   end
