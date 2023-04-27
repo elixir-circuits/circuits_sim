@@ -52,6 +52,8 @@ defmodule CircuitsSim.Device.SHT4X do
   ## protocol implementation
 
   defimpl I2CDevice do
+    @crc_alg :cerlc.init(:crc8_sensirion)
+
     @impl I2CDevice
     def read(%{current: :serial_number} = state, count) do
       result = binary_for_serial_number(state) |> trim_pad(count)
@@ -120,7 +122,7 @@ defmodule CircuitsSim.Device.SHT4X do
 
     defp add_crcs(data) do
       for <<uint16::16 <- data>>, into: <<>> do
-        crc = SHT4X.Calc.checksum(<<uint16::16>>)
+        crc = :cerlc.calc_crc(<<uint16::16>>, @crc_alg)
         <<uint16::16, crc>>
       end
     end
