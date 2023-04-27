@@ -50,6 +50,7 @@ defmodule CircuitsSim.MixProject do
       {:bmp280, "~> 0.2.12", only: [:dev, :test]},
       {:sgp30, github: "jjcarstens/sgp30", branch: "main", only: [:dev, :test]},
       {:cerlc, "~> 0.2.1"},
+      {:aht20, "~> 0.4.0", only: [:dev, :test]},
       {:sht4x, github: "elixir-sensors/sht4x", branch: "main", only: [:dev, :test]},
       {:ex_doc, "~> 0.22", only: :docs, runtime: false},
       {:credo, "~> 1.6", only: :dev, runtime: false},
