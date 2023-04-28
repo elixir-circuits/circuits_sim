@@ -6,121 +6,129 @@ defmodule CircuitsSim.Device.BMP280 do
   See the [datasheet](https://www.mouser.com/datasheet/2/783/BST-BME280-DS002-1509607.pdf) for details.
   Many features aren't implemented.
   """
+  alias CircuitsSim.Device.BMP280.Register
   alias CircuitsSim.I2C.I2CServer
   alias CircuitsSim.I2C.SimpleI2CDevice
   alias CircuitsSim.Tools
 
   @spec child_spec(keyword()) :: Supervisor.child_spec()
   def child_spec(args) do
-    device = __MODULE__.new()
+    device_options = Keyword.take(args, [:sensor_type])
+    device = __MODULE__.new(device_options)
     I2CServer.child_spec_helper(device, args)
   end
 
-  defstruct registers: %{}
+  defstruct registers: %{}, sensor_type: nil
 
-  @type t() :: %__MODULE__{registers: map()}
+  @type sensor_type() :: :bmp180 | :bmp280 | :bme280 | :bme680
+  @type options() :: [sensor_type: sensor_type()]
+  @type t() :: %__MODULE__{registers: map(), sensor_type: sensor_type()}
 
-  @spec new() :: t()
-  def new() do
-    %__MODULE__{registers: default_registers()}
-  end
-
-  defp default_registers() do
-    for(r <- 0x00..0xFF, into: %{}, do: {r, <<0>>})
-    |> put_sensor_type_register()
-    |> put_calibration_registers()
-    |> put_raw_sample_registers()
-  end
-
-  defp put_sensor_type_register(%{} = registers) do
-    registers |> put_in([reg(:sensor_type)], sensor_type_value(:bme280))
-  end
-
-  defp reg(:sensor_type), do: 0xD0
-  # defp sensor_type_value(:bmp180), do: <<0x55>>
-  # defp sensor_type_value(:bmp280), do: <<0x58>>
-  defp sensor_type_value(:bme280), do: <<0x60>>
-  # defp sensor_type_value(:bme680), do: <<0x61>>
-
-  defp put_calibration_registers(%{} = registers) do
-    [
-      # calib00: 26 bytes from 0x88
-      {0x88, <<29>>},
-      {0x89, <<110>>},
-      {0x8A, <<173>>},
-      {0x8B, <<102>>},
-      {0x8C, <<50>>},
-      {0x8D, <<0>>},
-      {0x8E, <<27>>},
-      {0x8F, <<143>>},
-      {0x90, <<56>>},
-      {0x91, <<214>>},
-      {0x92, <<208>>},
-      {0x93, <<11>>},
-      {0x94, <<84>>},
-      {0x95, <<43>>},
-      {0x96, <<15>>},
-      {0x97, <<255>>},
-      {0x98, <<249>>},
-      {0x99, <<255>>},
-      {0x9A, <<12>>},
-      {0x9B, <<48>>},
-      {0x9C, <<32>>},
-      {0x9D, <<209>>},
-      {0x9E, <<136>>},
-      {0x9F, <<19>>},
-      {0xA0, <<0>>},
-      {0xA1, <<75>>},
-      # calib26: 7 bytes from 0xE1
-      {0xE1, <<82>>},
-      {0xE2, <<1>>},
-      {0xE3, <<0>>},
-      {0xE4, <<23>>},
-      {0xE5, <<44>>},
-      {0xE6, <<3>>},
-      {0xE7, <<30>>}
-    ]
-    |> Enum.into(registers)
-  end
-
-  defp put_raw_sample_registers(%{} = registers) do
-    [
-      # press_msb: 8 bytes from 0xF7
-      {0xF7, <<69>>},
-      {0xF8, <<89>>},
-      {0xF9, <<64>>},
-      {0xFA, <<130>>},
-      {0xFB, <<243>>},
-      {0xFC, <<0>>},
-      {0xFD, <<137>>},
-      {0xFE, <<109>>}
-    ]
-    |> Enum.into(registers)
+  @spec new(options()) :: t()
+  def new(options \\ []) do
+    sensor_type = options[:sensor_type] || :bme280
+    registers = Register.default_registers(sensor_type)
+    %__MODULE__{registers: registers, sensor_type: sensor_type}
   end
 
   ## protocol implementation
 
   defimpl SimpleI2CDevice do
-    @impl SimpleI2CDevice
-    def write_register(state, reg, value), do: put_in(state.registers[reg], <<value>>)
+    @bmp180_reg_control_measurement 0xF4
+    @bmp180_set_pressure_reading 0x34
+    @bmp180_set_temperature_reading 0x2E
+    @bmp280_reg_control_measurement 0xF4
+    @bme280_reg_control_measurement 0xF4
+    @bme680_reg_status0 0x1D
 
     @impl SimpleI2CDevice
+    def write_register(
+          %{sensor_type: :bmp180} = state,
+          @bmp180_reg_control_measurement = reg,
+          @bmp180_set_pressure_reading = value
+        ) do
+      registers =
+        state.registers
+        |> Map.put(reg, value)
+        |> Map.merge(Register.measurement_registers(:bmp180, :pressure))
+
+      %{state | registers: registers}
+    end
+
+    def write_register(
+          %{sensor_type: :bmp180} = state,
+          @bmp180_reg_control_measurement = reg,
+          @bmp180_set_temperature_reading = value
+        ) do
+      registers =
+        state.registers
+        |> Map.put(reg, value)
+        |> Map.merge(Register.measurement_registers(:bmp180, :temperature))
+
+      %{state | registers: registers}
+    end
+
+    def write_register(
+          %{sensor_type: :bmp280} = state,
+          @bmp280_reg_control_measurement = reg,
+          value
+        ) do
+      registers =
+        state.registers
+        |> Map.put(reg, value)
+        |> Map.merge(Register.measurement_registers(:bmp280))
+
+      %{state | registers: registers}
+    end
+
+    def write_register(
+          %{sensor_type: :bme280} = state,
+          @bme280_reg_control_measurement = reg,
+          value
+        ) do
+      registers =
+        state.registers
+        |> Map.put(reg, value)
+        |> Map.merge(Register.measurement_registers(:bme280))
+
+      %{state | registers: registers}
+    end
+
+    def write_register(state, reg, value) do
+      put_in(state.registers[reg], value)
+    end
+
+    @impl SimpleI2CDevice
+    def read_register(
+          %{sensor_type: :bme680} = state,
+          @bme680_reg_status0
+        ) do
+      registers =
+        state.registers
+        |> Map.merge(Register.measurement_registers(:bme680))
+
+      new_data = 1
+      result = <<new_data::1, 0::7>>
+      {result, %{state | registers: registers}}
+    end
+
     def read_register(state, reg), do: {state.registers[reg], state}
 
     @impl SimpleI2CDevice
     def render(state) do
-      for {reg, data} <- state.registers do
-        [
-          "  ",
-          Tools.hex_byte(reg),
-          ": ",
-          for(<<b::1 <- data>>, do: to_string(b)),
-          "\n"
-        ]
-      end
+      rows =
+        for {addr_int, byte} <- Enum.sort_by(state.registers, fn {k, _} -> k end) do
+          addr_hex = Tools.hex_byte(addr_int)
+          bits = for(<<(b::1 <- <<byte>>)>>, do: to_string(b))
+          "#{addr_hex}: #{bits}\n"
+        end
+
+      ["Sensor type: #{state.sensor_type}\n" | rows]
     end
 
     @impl SimpleI2CDevice
-    def handle_message(state, _message), do: state
+    def handle_message(state, _message) do
+      {:not_implemented, state}
+    end
   end
 end
