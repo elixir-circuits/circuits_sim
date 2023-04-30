@@ -9,7 +9,6 @@ defmodule CircuitsSim.Device.BMP280 do
   alias CircuitsSim.Device.BMP280.Register
   alias CircuitsSim.I2C.I2CServer
   alias CircuitsSim.I2C.SimpleI2CDevice
-  alias CircuitsSim.Tools
 
   @spec child_spec(keyword()) :: Supervisor.child_spec()
   def child_spec(args) do
@@ -116,14 +115,7 @@ defmodule CircuitsSim.Device.BMP280 do
 
     @impl SimpleI2CDevice
     def render(state) do
-      rows =
-        for {addr_int, byte} <- Enum.sort_by(state.registers, fn {k, _} -> k end) do
-          addr_hex = Tools.hex_byte(addr_int)
-          bits = for(<<(b::1 <- <<byte>>)>>, do: to_string(b))
-          "#{addr_hex}: #{bits}\n"
-        end
-
-      ["Sensor type: #{state.sensor_type}\n" | rows]
+      "Sensor type: #{state.sensor_type}\n"
     end
 
     @impl SimpleI2CDevice

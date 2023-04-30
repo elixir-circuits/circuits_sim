@@ -11,10 +11,8 @@ defmodule CircuitsSim.Device.BMP280Test do
     i2c_bus = to_string(test_name)
     start_supervised!({BMP280Sim, bus_name: i2c_bus, address: @i2c_address, sensor_type: :bme680})
 
-    [first, second, third | _rest] = I2CServer.render(i2c_bus, @i2c_address)
-    assert first == "Sensor type: bme680\n"
-    assert second == "00: 00110010\n"
-    assert third == "01: 10101010\n"
+    rendered = I2CServer.render(i2c_bus, @i2c_address)
+    assert rendered == "Sensor type: bme680\n"
   end
 
   describe "BMP280 package" do
