@@ -1,7 +1,6 @@
 defmodule CircuitsSim.Device.BMP280Test do
   use ExUnit.Case
 
-  alias BMP280.Sensor
   alias CircuitsSim.I2C.I2CServer
   alias CircuitsSim.Device.BMP280, as: BMP280Sim
 
