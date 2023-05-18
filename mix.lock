@@ -1,6 +1,7 @@
 %{
   "aht20": {:hex, :aht20, "0.4.2", "5baf755dd6f09486a64f85b9a270fcfac12f6e6c1aa1bcf8a32732389d2871a7", [:mix], [{:circuits_i2c, "~> 0.3 or ~> 1.0", [hex: :circuits_i2c, repo: "hexpm", optional: false]}], "hexpm", "554e0bc2258279278a26e4c79b28cfad7cb6cc880f5170483b41cf015a2f5367"},
   "bmp280": {:hex, :bmp280, "0.2.12", "971a0e701a9124bd8b6092b40f59fdc7b15c5ad24894008aa7a666c65abb268d", [:mix], [{:circuits_i2c, "~> 0.3.0 or ~> 1.0", [hex: :circuits_i2c, repo: "hexpm", optional: false]}], "hexpm", "41dd2cf9d6936ec3affd90ac3ec88d8ab45efb5a6d52ecb527f9a361f2247498"},
+  "bmp3xx": {:hex, :bmp3xx, "0.1.6", "305a20e9f684ce7efc59185f20c17ddd3f9a5ce5fbf5fbeca1c0d17d58042d05", [:mix], [{:circuits_i2c, "~> 0.3 or ~> 1.0 or ~> 2.0", [hex: :circuits_i2c, repo: "hexpm", optional: false]}], "hexpm", "4b4f1e0eb62a9d0b8c7ffaba456e386848fa75328bc66a65e9cfa77a28e9be9d"},
   "bunt": {:hex, :bunt, "0.2.1", "e2d4792f7bc0ced7583ab54922808919518d0e57ee162901a16a1b6664ef3b14", [:mix], [], "hexpm", "a330bfb4245239787b15005e66ae6845c9cd524a288f0d141c148b02603777a5"},
   "cerlc": {:hex, :cerlc, "0.2.1", "cfe0880aa049ebcca079ca49578055aa48e7f2e9ed8ae08bd1f919d59015d03f", [:rebar3], [], "hexpm", "37f0d74a4277dcbaf64c7c47e9953dcc8060d26d86bb466ab2a86928e0181a7d"},
   "circuits_gpio": {:git, "https://github.com/elixir-circuits/circuits_gpio.git", "86c304aa517dbf8bdcf1ed20d35ff12d84f468b6", [branch: "v2.0"]},
