@@ -47,6 +47,7 @@ defmodule CircuitsSim.MixProject do
       {:circuits_spi, github: "elixir-circuits/circuits_spi", branch: "v2.0"},
       {:circuits_gpio, github: "elixir-circuits/circuits_gpio", branch: "v2.0"},
       {:bmp280, "~> 0.2.12", only: [:dev, :test]},
+      {:bmp3xx, "~> 0.1.5", only: [:dev, :test]},
       {:sgp30, github: "jjcarstens/sgp30", branch: "main", only: [:dev, :test]},
       {:cerlc, "~> 0.2.1"},
       {:aht20, "~> 0.4.0", only: [:dev, :test]},
