@@ -43,9 +43,9 @@ defmodule CircuitsSim.MixProject do
 
   defp deps() do
     [
-      {:circuits_i2c, github: "elixir-circuits/circuits_i2c", branch: "v2.0", override: true},
-      {:circuits_spi, github: "elixir-circuits/circuits_spi", branch: "v2.0"},
-      {:circuits_gpio, github: "elixir-circuits/circuits_gpio", branch: "v2.0"},
+      {:circuits_i2c, "~> 2.0.0-pre.0", override: true},
+      {:circuits_spi, "~> 2.0.0-pre.0"},
+      {:circuits_gpio, "~> 2.0.0-pre.0"},
       {:bmp280, "~> 0.2.12", only: [:dev, :test]},
       {:bmp3xx, "~> 0.1.5", only: [:dev, :test]},
       {:sgp30, github: "jjcarstens/sgp30", branch: "main", only: [:dev, :test]},
