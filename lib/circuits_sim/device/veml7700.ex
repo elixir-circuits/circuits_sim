@@ -124,8 +124,7 @@ defmodule CircuitsSim.Device.VEML7700 do
 
     @impl I2CDevice
     def render(state) do
-      light_lux = Float.round(state.light_lux * 1.0, 3)
-      "Light: #{light_lux} lux"
+      "Ambient light sensor raw output: #{state.als_output}"
     end
 
     @impl I2CDevice
