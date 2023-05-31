@@ -15,6 +15,11 @@ defmodule CircuitsSim.Device.VEML7700Test do
     [i2c_bus: i2c_bus]
   end
 
+  test "setting VEML7700 state", %{i2c_bus: i2c_bus} do
+    VEML7700Sim.set_state(i2c_bus, @i2c_address, als_output: 123)
+    assert I2CServer.render(i2c_bus, @i2c_address) == "Ambient light sensor raw output: 123"
+  end
+
   test "reads and writes registers", %{i2c_bus: i2c_bus} do
     VEML7700Sim.set_state(i2c_bus, @i2c_address, als_config: 0, als_output: 440)
 
