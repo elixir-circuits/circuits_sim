@@ -27,7 +27,7 @@ defmodule CircuitsSim.Device.SHT4XTest do
     SHT4XSim.set_temperature_c(i2c_bus, @i2c_address, 11.1)
     SHT4XSim.set_humidity_rh(i2c_bus, @i2c_address, 33.3)
 
-    {:ok, measurement} = SHT4X.measure(sht_pid)
+    measurement = SHT4X.get_sample(sht_pid)
     assert_in_delta measurement.humidity_rh, 33.3, 0.1
     assert_in_delta measurement.temperature_c, 11.1, 0.1
   end
