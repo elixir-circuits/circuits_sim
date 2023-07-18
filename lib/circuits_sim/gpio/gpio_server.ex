@@ -109,7 +109,7 @@ defmodule CircuitsSim.GPIO.GPIOServer do
         {:reply, :ok, %{state | device: new_device, cached_value: value}}
 
       :input ->
-        Logger.warn("Ignoring write to input GPIO #{inspect(state.pin_spec)}")
+        Logger.warning("Ignoring write to input GPIO #{inspect(state.pin_spec)}")
         {:reply, :ok, state}
     end
   end
@@ -182,7 +182,7 @@ defmodule CircuitsSim.GPIO.GPIOServer do
   defp process_read(%{pull_mode: :pulldown}, :hi_z), do: 0
 
   defp process_read(state, :hi_z) do
-    Logger.warn(
+    Logger.warning(
       "GPIO #{inspect(state.pin_spec)} is in high impedance state. Set pull mode to reliably read."
     )
 
