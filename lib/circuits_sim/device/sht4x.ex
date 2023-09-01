@@ -10,7 +10,7 @@ defmodule CircuitsSim.Device.SHT4X do
   alias CircuitsSim.I2C.I2CDevice
   alias CircuitsSim.I2C.I2CServer
 
-  defstruct current: nil, serial_number: 0, humidity_rh: 0.0, temperature_c: 0.0
+  defstruct current: nil, serial_number: 0x12345678, humidity_rh: 30.0, temperature_c: 22.2
 
   @type t() :: %__MODULE__{
           current: atom(),
