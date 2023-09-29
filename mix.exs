@@ -54,6 +54,7 @@ defmodule CircuitsSim.MixProject do
       {:sht4x, "~> 0.2.0", only: [:dev, :test]},
       {:ex_doc, "~> 0.22", only: :docs, runtime: false},
       {:credo, "~> 1.6", only: :dev, runtime: false},
+      {:credo_binary_patterns, "~> 0.2.2", only: :dev, runtime: false},
       {:dialyxir, "~> 1.2", only: :dev, runtime: false}
     ]
   end
