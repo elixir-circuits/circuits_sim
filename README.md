@@ -13,8 +13,8 @@ following in your `mix.exs`:
   defp deps() do
     [
       {:circuits_i2c, "~> 2.0"},
-      {:circuits_spi, "~> 2.0.0-pre.0"},
-      {:circuits_gpio, "~> 2.0.0-pre.0"}
+      {:circuits_spi, "~> 2.0"},
+      {:circuits_gpio, "~> 2.0"}
     ]
   end
 ```
