@@ -40,11 +40,6 @@ defmodule CircuitsSim.Device.GPIOLED do
     defp led_string(1), do: "on"
 
     @impl GPIODevice
-    def info(state) do
-      %{device: __MODULE__, value: state.value}
-    end
-
-    @impl GPIODevice
     def handle_message(state, _message) do
       {:ok, state}
     end

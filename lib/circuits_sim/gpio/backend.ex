@@ -9,16 +9,32 @@ defmodule CircuitsSim.GPIO.Backend do
   alias CircuitsSim.GPIO.GPIOServer
   alias CircuitsSim.GPIO.Handle
 
+  @impl Backend
+  def enumerate(_options) do
+    DeviceRegistry.bus_names(:gpio)
+  end
+
+  @impl Backend
+  def identifiers(gpio_spec, _options) do
+    # Simplest possible implementation for now.
+    {:ok, %{controller: "sim", label: "unknown", location: gpio_spec}}
+  end
+
+  @impl Backend
+  def status(_gpio_spec, _options) do
+    {:error, :unimplemented}
+  end
+
   @doc """
   Open an GPIO handle
   """
   @impl Backend
   def open(gpio_spec, direction, options) do
     with {:ok, identifiers} <- identifiers(gpio_spec, options),
-         handle = %Handle{gpio_spec: identifiers.gpio_spec},
-         :ok <- GPIOServer.set_direction(identifiers.gpio_spec, direction),
-         :ok <- set_pull_mode(identifiers.gpio_spec, options[:pull_mode]),
-         :ok <- set_initial_value(identifiers.gpio_spec, options[:initial_value]) do
+         handle = %Handle{gpio_spec: identifiers.location},
+         :ok <- GPIOServer.set_direction(identifiers.location, direction),
+         :ok <- set_pull_mode(identifiers.location, options[:pull_mode]),
+         :ok <- set_initial_value(identifiers.location, options[:initial_value]) do
       {:ok, handle}
     end
   end
@@ -33,7 +49,7 @@ defmodule CircuitsSim.GPIO.Backend do
   Return information about this backend
   """
   @impl Backend
-  def info() do
+  def backend_info() do
     %{backend: __MODULE__}
   end
 end

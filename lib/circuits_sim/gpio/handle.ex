@@ -47,10 +47,5 @@ defmodule CircuitsSim.GPIO.Handle do
 
     @impl Handle
     def close(%CircuitsSim.GPIO.Handle{}), do: :ok
-
-    @impl Handle
-    def info(%CircuitsSim.GPIO.Handle{} = handle) do
-      GPIOServer.info(handle.pin_spec)
-    end
   end
 end

@@ -24,12 +24,6 @@ defprotocol CircuitsSim.GPIO.GPIODevice do
   def write(dev, value)
 
   @doc """
-  Return info about the GPIO like Circuits.GPIO.info/1
-  """
-  @spec info(t()) :: map()
-  def info(dev)
-
-  @doc """
   Return the internal state as ASCII art
   """
   @spec render(t()) :: IO.ANSI.ansidata()
@@ -49,7 +43,7 @@ defprotocol CircuitsSim.GPIO.GPIODevice do
   @doc """
   Handle a message sent to the GenServer running the device
 
-  These are used for timeouts or
+  These are used for timeouts or other events
   """
   @spec handle_info(t(), any()) :: t()
   def handle_info(dev, message)

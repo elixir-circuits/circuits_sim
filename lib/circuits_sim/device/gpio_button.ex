@@ -81,11 +81,6 @@ defmodule CircuitsSim.Device.GPIOButton do
     end
 
     @impl GPIODevice
-    def info(state) do
-      %{device: __MODULE__, value: state.state}
-    end
-
-    @impl GPIODevice
     def handle_message(state, {:press, duration}) do
       if duration != :infinity do
         # Don't try to do anything fancy with timeouts

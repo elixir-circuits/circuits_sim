@@ -59,7 +59,7 @@ defmodule CircuitsSim.GPIO.GPIOServer do
     GenServer.call(via_name(gpio_spec), :read)
   end
 
-  @spec set_direction(GPIO.gpio_spec(), GPIO.pin_direction()) :: :ok | {:error, atom()}
+  @spec set_direction(GPIO.gpio_spec(), GPIO.direction()) :: :ok | {:error, atom()}
   def set_direction(gpio_spec, direction) do
     GenServer.call(via_name(gpio_spec), {:set_direction, direction})
   end
@@ -130,10 +130,6 @@ defmodule CircuitsSim.GPIO.GPIOServer do
 
   def handle_call(:render, _from, state) do
     {:reply, GPIODevice.render(state.device), state}
-  end
-
-  def handle_call(:info, _from, state) do
-    {:reply, GPIODevice.info(state.device), state}
   end
 
   def handle_call({:send_message, message}, _from, state) do
