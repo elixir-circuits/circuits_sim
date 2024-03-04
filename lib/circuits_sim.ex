@@ -46,11 +46,11 @@ defmodule CircuitsSim do
 
   defp gpio_info() do
     DeviceRegistry.bus_names(:gpio)
-    |> Enum.map(&pin_spec_info/1)
+    |> Enum.map(&gpio_spec_info/1)
   end
 
-  defp pin_spec_info(pin_spec) do
-    result = GPIOServer.render(pin_spec)
-    ["=== GPIO ", inspect(pin_spec), " ===\n", result]
+  defp gpio_spec_info(gpio_spec) do
+    result = GPIOServer.render(gpio_spec)
+    ["=== GPIO ", inspect(gpio_spec), " ===\n", result]
   end
 end

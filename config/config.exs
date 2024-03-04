@@ -14,8 +14,8 @@ config :circuits_sim,
     {CircuitsSim.Device.SGP30, bus_name: "i2c-1", address: 0x58},
     {CircuitsSim.Device.BMP3XX, bus_name: "i2c-1", address: 0x77},
     {CircuitsSim.Device.TM1620, bus_name: "spidev0.0", render: :binary_clock},
-    {CircuitsSim.Device.GPIOLED, pin_spec: 10},
-    {CircuitsSim.Device.GPIOButton, pin_spec: 11}
+    {CircuitsSim.Device.GPIOLED, gpio_spec: 10},
+    {CircuitsSim.Device.GPIOButton, gpio_spec: 11}
   ]
 
 # Default to simulated versions of I2C, SPI, and GPIO

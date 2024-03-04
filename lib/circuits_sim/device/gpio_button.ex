@@ -44,18 +44,18 @@ defmodule CircuitsSim.Device.GPIOButton do
   Pass in a duration in milliseconds to automatically release the button after
   a timeout.
   """
-  @spec press(GPIO.pin_spec(), non_neg_integer() | :infinity) :: :ok
-  def press(pin_spec, duration \\ :infinity)
+  @spec press(GPIO.gpio_spec(), non_neg_integer() | :infinity) :: :ok
+  def press(gpio_spec, duration \\ :infinity)
       when duration == :infinity or (duration > 0 and duration < 10000) do
-    GPIOServer.send_message(pin_spec, {:press, duration})
+    GPIOServer.send_message(gpio_spec, {:press, duration})
   end
 
   @doc """
   Release the button
   """
-  @spec release(GPIO.pin_spec()) :: :ok
-  def release(pin_spec) do
-    GPIOServer.send_message(pin_spec, :release)
+  @spec release(GPIO.gpio_spec()) :: :ok
+  def release(gpio_spec) do
+    GPIOServer.send_message(gpio_spec, :release)
   end
 
   defimpl GPIODevice do

@@ -9,7 +9,7 @@ defmodule CircuitsSim.GPIO.GPIOServer do
 
   require Logger
 
-  defstruct pin_spec: nil,
+  defstruct gpio_spec: nil,
             device: nil,
             direction: :input,
             pull_mode: :none,
@@ -17,7 +17,7 @@ defmodule CircuitsSim.GPIO.GPIOServer do
             interrupt_receiver: nil,
             interrupt_trigger: :none
 
-  @type init_args :: [pin_spec: GPIO.pin_spec()]
+  @type init_args :: [gpio_spec: GPIO.gpio_spec()]
 
   @doc """
   Helper for creating child_specs for simple I2C implementations
@@ -27,9 +27,9 @@ defmodule CircuitsSim.GPIO.GPIOServer do
           :start => {__MODULE__, :start_link, [[any()], ...]}
         }
   def child_spec_helper(device, args) do
-    pin_spec = Keyword.fetch!(args, :pin_spec)
+    gpio_spec = Keyword.fetch!(args, :gpio_spec)
 
-    combined_args = Keyword.merge([device: device, name: via_name(pin_spec)], args)
+    combined_args = Keyword.merge([device: device, name: via_name(gpio_spec)], args)
 
     %{
       id: __MODULE__,
@@ -39,64 +39,59 @@ defmodule CircuitsSim.GPIO.GPIOServer do
 
   @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(init_args) do
-    pin_spec = Keyword.fetch!(init_args, :pin_spec)
+    gpio_spec = Keyword.fetch!(init_args, :gpio_spec)
 
-    GenServer.start_link(__MODULE__, init_args, name: via_name(pin_spec))
+    GenServer.start_link(__MODULE__, init_args, name: via_name(gpio_spec))
   end
 
   # Helper for constructing the via_name for GPIODevice servers
-  defp via_name(pin_spec) do
-    DeviceRegistry.via_name(:gpio, pin_spec, 0)
+  defp via_name(gpio_spec) do
+    DeviceRegistry.via_name(:gpio, gpio_spec, 0)
   end
 
-  @spec write(GPIO.pin_spec(), GPIO.value()) :: :ok
-  def write(pin_spec, value) do
-    GenServer.call(via_name(pin_spec), {:write, value})
+  @spec write(GPIO.gpio_spec(), GPIO.value()) :: :ok
+  def write(gpio_spec, value) do
+    GenServer.call(via_name(gpio_spec), {:write, value})
   end
 
-  @spec read(GPIO.pin_spec()) :: GPIO.value()
-  def read(pin_spec) do
-    GenServer.call(via_name(pin_spec), :read)
+  @spec read(GPIO.gpio_spec()) :: GPIO.value()
+  def read(gpio_spec) do
+    GenServer.call(via_name(gpio_spec), :read)
   end
 
-  @spec set_direction(GPIO.pin_spec(), GPIO.pin_direction()) :: :ok | {:error, atom()}
-  def set_direction(pin_spec, direction) do
-    GenServer.call(via_name(pin_spec), {:set_direction, direction})
+  @spec set_direction(GPIO.gpio_spec(), GPIO.pin_direction()) :: :ok | {:error, atom()}
+  def set_direction(gpio_spec, direction) do
+    GenServer.call(via_name(gpio_spec), {:set_direction, direction})
   end
 
-  @spec set_interrupts(GPIO.pin_spec(), GPIO.trigger(), GPIO.interrupt_options()) ::
+  @spec set_interrupts(GPIO.gpio_spec(), GPIO.trigger(), GPIO.interrupt_options()) ::
           :ok | {:error, atom()}
-  def set_interrupts(pin_spec, trigger, options) do
+  def set_interrupts(gpio_spec, trigger, options) do
     receiver = options[:receiver] || self()
-    GenServer.call(via_name(pin_spec), {:set_interrupts, trigger, receiver})
+    GenServer.call(via_name(gpio_spec), {:set_interrupts, trigger, receiver})
   end
 
-  @spec set_pull_mode(GPIO.pin_spec(), GPIO.pull_mode()) :: :ok | {:error, atom()}
-  def set_pull_mode(pin_spec, pull_mode) do
-    GenServer.call(via_name(pin_spec), {:set_pull_mode, pull_mode})
+  @spec set_pull_mode(GPIO.gpio_spec(), GPIO.pull_mode()) :: :ok | {:error, atom()}
+  def set_pull_mode(gpio_spec, pull_mode) do
+    GenServer.call(via_name(gpio_spec), {:set_pull_mode, pull_mode})
   end
 
-  @spec info(GPIO.pin_spec()) :: map()
-  def info(pin_spec) do
-    GenServer.call(via_name(pin_spec), :info)
+  @spec render(GPIO.gpio_spec()) :: IO.ANSI.ansidata()
+  def render(gpio_spec) do
+    GenServer.call(via_name(gpio_spec), :render)
   end
 
-  @spec render(GPIO.pin_spec()) :: IO.ANSI.ansidata()
-  def render(pin_spec) do
-    GenServer.call(via_name(pin_spec), :render)
-  end
-
-  @spec send_message(GPIO.pin_spec(), any()) :: any()
-  def send_message(pin_spec, message) do
-    GenServer.call(via_name(pin_spec), {:send_message, message})
+  @spec send_message(GPIO.gpio_spec(), any()) :: any()
+  def send_message(gpio_spec, message) do
+    GenServer.call(via_name(gpio_spec), {:send_message, message})
   end
 
   @impl GenServer
   def init(init_args) do
-    pin_spec = Keyword.fetch!(init_args, :pin_spec)
+    gpio_spec = Keyword.fetch!(init_args, :gpio_spec)
     device = Keyword.fetch!(init_args, :device)
 
-    {:ok, %__MODULE__{pin_spec: pin_spec, device: device}}
+    {:ok, %__MODULE__{gpio_spec: gpio_spec, device: device}}
   end
 
   @impl GenServer
@@ -109,7 +104,7 @@ defmodule CircuitsSim.GPIO.GPIOServer do
         {:reply, :ok, %{state | device: new_device, cached_value: value}}
 
       :input ->
-        Logger.warning("Ignoring write to input GPIO #{inspect(state.pin_spec)}")
+        Logger.warning("Ignoring write to input GPIO #{inspect(state.gpio_spec)}")
         {:reply, :ok, state}
     end
   end
@@ -183,7 +178,7 @@ defmodule CircuitsSim.GPIO.GPIOServer do
 
   defp process_read(state, :hi_z) do
     Logger.warning(
-      "GPIO #{inspect(state.pin_spec)} is in high impedance state. Set pull mode to reliably read."
+      "GPIO #{inspect(state.gpio_spec)} is in high impedance state. Set pull mode to reliably read."
     )
 
     0
@@ -211,6 +206,6 @@ defmodule CircuitsSim.GPIO.GPIOServer do
   defp send_interrupt_message(state, value) do
     {uptime_ms, _} = :erlang.statistics(:wall_clock)
     uptime_ns = uptime_ms * 1_000_000
-    send(state.interrupt_receiver, {:circuits_gpio, state.pin_spec, uptime_ns, value})
+    send(state.interrupt_receiver, {:circuits_gpio, state.gpio_spec, uptime_ns, value})
   end
 end

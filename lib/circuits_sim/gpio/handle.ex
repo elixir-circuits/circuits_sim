@@ -4,15 +4,15 @@ defmodule CircuitsSim.GPIO.Handle do
   alias Circuits.GPIO.Handle
   alias CircuitsSim.GPIO.GPIOServer
 
-  defstruct [:pin_spec]
+  defstruct [:gpio_spec]
 
   @type t() :: %__MODULE__{
-          pin_spec: Circuits.GPIO.pin_spec()
+          gpio_spec: Circuits.GPIO.gpio_spec()
         }
 
   @spec render(t()) :: String.t()
   def render(%__MODULE__{} = handle) do
-    GPIOServer.render(handle.pin_spec)
+    GPIOServer.render(handle.gpio_spec)
     |> IO.ANSI.format()
     |> IO.chardata_to_string()
   end
@@ -22,27 +22,27 @@ defmodule CircuitsSim.GPIO.Handle do
 
     @impl Handle
     def read(%CircuitsSim.GPIO.Handle{} = handle) do
-      GPIOServer.read(handle.pin_spec)
+      GPIOServer.read(handle.gpio_spec)
     end
 
     @impl Handle
     def write(%CircuitsSim.GPIO.Handle{} = handle, value) do
-      GPIOServer.write(handle.pin_spec, value)
+      GPIOServer.write(handle.gpio_spec, value)
     end
 
     @impl Handle
     def set_direction(%CircuitsSim.GPIO.Handle{} = handle, direction) do
-      GPIOServer.set_direction(handle.pin_spec, direction)
+      GPIOServer.set_direction(handle.gpio_spec, direction)
     end
 
     @impl Handle
     def set_interrupts(%CircuitsSim.GPIO.Handle{} = handle, trigger, options) do
-      GPIOServer.set_interrupts(handle.pin_spec, trigger, options)
+      GPIOServer.set_interrupts(handle.gpio_spec, trigger, options)
     end
 
     @impl Handle
     def set_pull_mode(%CircuitsSim.GPIO.Handle{} = handle, pull_mode) do
-      GPIOServer.set_pull_mode(handle.pin_spec, pull_mode)
+      GPIOServer.set_pull_mode(handle.gpio_spec, pull_mode)
     end
 
     @impl Handle
