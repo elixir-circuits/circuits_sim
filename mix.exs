@@ -43,7 +43,7 @@ defmodule CircuitsSim.MixProject do
 
   defp deps() do
     [
-      {:circuits_i2c, "~> 2.0", override: true},
+      {:circuits_i2c, "~> 2.0"},
       {:circuits_spi, "~> 2.0"},
       {:circuits_gpio, "~> 2.0"},
       {:bmp280, "~> 0.2.12", only: [:dev, :test]},
