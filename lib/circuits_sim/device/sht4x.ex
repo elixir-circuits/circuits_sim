@@ -15,6 +15,7 @@ defmodule CircuitsSim.Device.SHT4X do
             humidity_rh: 30.0,
             temperature_c: 22.2,
             crc_injection_count: 0,
+            broken: nil,
             acc: <<>>
 
   @type t() :: %__MODULE__{
@@ -23,6 +24,7 @@ defmodule CircuitsSim.Device.SHT4X do
           humidity_rh: float(),
           temperature_c: float(),
           crc_injection_count: non_neg_integer(),
+          broken: nil | {:error, any()},
           acc: binary()
         }
 
@@ -69,12 +71,27 @@ defmodule CircuitsSim.Device.SHT4X do
     I2CServer.send_message(bus_name, address, {:inject_crc_errors, count})
   end
 
+  @doc """
+  Experimental API to return I2C errors on read/read_writes
+
+  Set the 3rd argument to an error tuple to be returned or `nil` to work
+  normally.
+  """
+  @spec set_broken(String.t(), Circuits.I2C.address(), nil | {:error, any()}) :: :ok
+  def set_broken(bus_name, address, broken) do
+    I2CServer.send_message(bus_name, address, {:set_broken, broken})
+  end
+
   ## protocol implementation
 
   defimpl I2CDevice do
     @crc_alg :cerlc.init(:crc8_sensirion)
 
     @impl I2CDevice
+    def read(%{broken: result} = state, _count) when is_tuple(result) do
+      {result, state}
+    end
+
     def read(%{current: :serial_number} = state, count) do
       state |> binary_for_serial_number() |> flush_read_to_result(count)
     end
@@ -104,6 +121,10 @@ defmodule CircuitsSim.Device.SHT4X do
     def write(state, _), do: state
 
     @impl I2CDevice
+    def write_read(%{broken: result} = state, _to_write, _read_count) when is_tuple(result) do
+      {result, state}
+    end
+
     def write_read(state, _to_write, read_count) do
       {{:ok, :binary.copy(<<0>>, read_count)}, %{state | current: nil}}
     end
@@ -129,6 +150,10 @@ defmodule CircuitsSim.Device.SHT4X do
 
     def handle_message(state, {:inject_crc_errors, count}) do
       {:ok, %{state | crc_injection_count: count}}
+    end
+
+    def handle_message(state, {:set_broken, value}) do
+      {:ok, %{state | broken: value}}
     end
 
     defp binary_for_serial_number(state) do
