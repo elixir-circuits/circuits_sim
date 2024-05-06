@@ -6,26 +6,13 @@
 
 Interact with simulated I2C devices
 
-NOTE: This project is an active development. Expect big API changes as we use it.
-
 ## Using
 
-CircuitsSim requires Elixir Circuits 2.0 libraries. Currently, this requires the
-following in your `mix.exs`:
-
-```elixir
-  defp deps() do
-    [
-      {:circuits_i2c, "~> 2.0"},
-      {:circuits_spi, "~> 2.0"},
-      {:circuits_gpio, "~> 2.0"}
-    ]
-  end
-```
+CircuitsSim requires Elixir Circuits 2.0 libraries.
 
 You may need to add `override: true` since not many libraries have been updated
-to allow Circuits 2.0 versions. The update is generally compatible, so this is
-safe.
+to allow Circuits 2.0 versions. Circuits 2.0 is mostly backwards compatible, so
+this should be safe.
 
 CircuitsSim works by providing an alternative backend for interacting with
 hardware. This is setup via `config/config.exs`. In your project, you may only
