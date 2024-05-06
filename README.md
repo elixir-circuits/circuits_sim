@@ -1,5 +1,9 @@
 # CircuitsSim
 
+[![Hex version](https://img.shields.io/hexpm/v/circuits_sim.svg "Hex version")](https://hex.pm/packages/circuits_sim)
+[![API docs](https://img.shields.io/hexpm/v/circuits_sim.svg?label=hexdocs "API docs")](https://hexdocs.pm/circuits_sim/)
+[![CircleCI](https://circleci.com/gh/elixir-circuits/circuits_sim.svg?style=svg)](https://circleci.com/gh/elixir-circuits/circuits_sim)
+
 Interact with simulated I2C devices
 
 NOTE: This project is an active development. Expect big API changes as we use it.
