@@ -42,11 +42,14 @@ config :circuits_sim,
     {CircuitsSim.Device.ADS7138, bus_name: "i2c-1", address: 0x10},
     {CircuitsSim.Device.MCP23008, bus_name: "i2c-1", address: 0x20},
     {CircuitsSim.Device.MCP23008, bus_name: "i2c-1", address: 0x21},
-    {CircuitsSim.Device.TM1620, bus_name: "spidev0.0", render: :binary_clock}
+    {CircuitsSim.Device.TM1620, bus_name: "spidev0.0", render: :binary_clock},
+    {CircuitsSim.Device.GPIOLED, gpio_spec: 10},
+    {CircuitsSim.Device.GPIOButton, gpio_spec: 11}
   ]
 ```
 
-This shows two simulated I2C buses, `"i2c-0"` and `"i2c-1"`, and one SPI bus.
+This shows two simulated I2C buses, `"i2c-0"` and `"i2c-1"`, one SPI bus,
+and two GPIO.
 The `"i2c-0"` bus has two devices, an MCP23008 GPIO expander and an AT24C02
 EEPROM.
 
