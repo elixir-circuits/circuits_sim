@@ -34,7 +34,7 @@ defmodule CircuitsSim.GPIO.Backend do
          handle = %Handle{gpio_spec: identifiers.location},
          :ok <- GPIOServer.set_direction(identifiers.location, direction),
          :ok <- set_pull_mode(identifiers.location, options[:pull_mode]),
-         :ok <- set_initial_value(identifiers.location, options[:initial_value]) do
+         :ok <- set_initial_value(direction, identifiers.location, options[:initial_value]) do
       {:ok, handle}
     end
   end
@@ -42,8 +42,8 @@ defmodule CircuitsSim.GPIO.Backend do
   defp set_pull_mode(_gpio_spec, :not_set), do: :ok
   defp set_pull_mode(gpio_spec, pull_mode), do: GPIOServer.set_pull_mode(gpio_spec, pull_mode)
 
-  defp set_initial_value(_gpio_spec, :not_set), do: :ok
-  defp set_initial_value(gpio_spec, value), do: GPIOServer.write(gpio_spec, value)
+  defp set_initial_value(:output, gpio_spec, value), do: GPIOServer.write(gpio_spec, value)
+  defp set_initial_value(:input, _gpio_spec, _value), do: :ok
 
   @doc """
   Return information about this backend
