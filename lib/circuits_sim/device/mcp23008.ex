@@ -110,7 +110,7 @@ defmodule CircuitsSim.Device.MCP23008 do
     @impl SimpleI2CDevice
     def render(state) do
       {pin, io, values} =
-        for i <- 7..0 do
+        for i <- 7..0//-1 do
           mask = Bitwise.bsl(1, i)
 
           iodir = if Bitwise.band(state.iodir, mask) == 0, do: "O", else: "I"
