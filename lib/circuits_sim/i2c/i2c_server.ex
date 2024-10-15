@@ -126,7 +126,7 @@ defmodule CircuitsSim.I2C.I2CServer do
   end
 
   def handle_call({:send_message, message}, _from, state) do
-    {result, new_device} = I2CDevice.handle_message(state.device, message)
+    {result, new_device} = do_send_message(state, message)
     {:reply, result, %{state | device: new_device}}
   end
 
@@ -163,6 +163,14 @@ defmodule CircuitsSim.I2C.I2CServer do
 
   defp do_render(%{protocol: SimpleI2CDevice} = state) do
     SimpleI2CDevice.render(state.device)
+  end
+
+  defp do_send_message(%{protocol: I2CDevice} = state, message) do
+    I2CDevice.handle_message(state.device, message)
+  end
+
+  defp do_send_message(%{protocol: SimpleI2CDevice} = state, message) do
+    SimpleI2CDevice.handle_message(state.device, message)
   end
 
   defp simple_read(state, 0, acc) do
