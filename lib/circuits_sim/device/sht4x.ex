@@ -10,13 +10,20 @@ defmodule CircuitsSim.Device.SHT4X do
   alias CircuitsSim.I2C.I2CDevice
   alias CircuitsSim.I2C.I2CServer
 
-  defstruct current: nil, serial_number: 0x12345678, humidity_rh: 30.0, temperature_c: 22.2
+  defstruct current: nil,
+            serial_number: 0x12345678,
+            humidity_rh: 30.0,
+            temperature_c: 22.2,
+            crc_injection_count: 0,
+            acc: <<>>
 
   @type t() :: %__MODULE__{
           current: atom(),
           serial_number: integer(),
           humidity_rh: float(),
-          temperature_c: float()
+          temperature_c: float(),
+          crc_injection_count: non_neg_integer(),
+          acc: binary()
         }
 
   @spec child_spec(keyword()) :: Supervisor.child_spec()
@@ -32,7 +39,9 @@ defmodule CircuitsSim.Device.SHT4X do
           current: nil,
           serial_number: integer(),
           humidity_rh: float(),
-          temperature_c: float()
+          temperature_c: float(),
+          crc_injection_count: non_neg_integer(),
+          acc: binary()
         }
   def new(options \\ []) do
     serial_number = options[:serial_number] || 0
@@ -49,6 +58,17 @@ defmodule CircuitsSim.Device.SHT4X do
     I2CServer.send_message(bus_name, address, {:set_temperature_c, value})
   end
 
+  @doc """
+  Inject CRC errors into the next n CRC fields
+
+  Currently all messages have 2 CRC fields, so this will cause CRC mismatch
+  errors on the next n/2 messages.
+  """
+  @spec inject_crc_errors(String.t(), Circuits.I2C.address(), non_neg_integer()) :: :ok
+  def inject_crc_errors(bus_name, address, count) when is_integer(count) do
+    I2CServer.send_message(bus_name, address, {:inject_crc_errors, count})
+  end
+
   ## protocol implementation
 
   defimpl I2CDevice do
@@ -56,23 +76,18 @@ defmodule CircuitsSim.Device.SHT4X do
 
     @impl I2CDevice
     def read(%{current: :serial_number} = state, count) do
-      result = binary_for_serial_number(state) |> trim_pad(count)
-      {result, %{state | current: nil}}
+      new_state = binary_for_serial_number(state)
+      {trim_pad(new_state.acc, count), %{new_state | current: nil, acc: <<>>}}
     end
 
-    def read(%{current: :measure_high_repeatability} = state, count) do
-      result = raw_sample(state) |> trim_pad(count)
-      {result, %{state | current: nil}}
-    end
-
-    def read(%{current: :measure_medium_repeatability} = state, count) do
-      result = raw_sample(state) |> trim_pad(count)
-      {result, %{state | current: nil}}
-    end
-
-    def read(%{current: :measure_low_repeatability} = state, count) do
-      result = raw_sample(state) |> trim_pad(count)
-      {result, %{state | current: nil}}
+    def read(%{current: op} = state, count)
+        when op in [
+               :measure_high_repeatability,
+               :measure_medium_repeatability,
+               :measure_low_repeatability
+             ] do
+      new_state = raw_sample(state)
+      {trim_pad(new_state.acc, count), %{new_state | current: nil, acc: <<>>}}
     end
 
     def read(state, count) do
@@ -110,21 +125,35 @@ defmodule CircuitsSim.Device.SHT4X do
       {:ok, %{state | temperature_c: value}}
     end
 
+    def handle_message(state, {:inject_crc_errors, count}) do
+      {:ok, %{state | crc_injection_count: count}}
+    end
+
     defp binary_for_serial_number(state) do
-      <<state.serial_number::32>> |> add_crcs()
+      state |> add_crcs(<<state.serial_number::32>>)
     end
 
     defp raw_sample(state) do
       raw_rh = round((state.humidity_rh + 6) * (0xFFFF - 1) / 125)
       raw_t = round((state.temperature_c + 45) * (0xFFFF - 1) / 175)
-      <<raw_t::16, raw_rh::16>> |> add_crcs()
+
+      state |> add_crcs(<<raw_t::16, raw_rh::16>>)
     end
 
-    defp add_crcs(data) do
-      for <<uint16::16 <- data>>, into: <<>> do
-        crc = :cerlc.calc_crc(<<uint16::16>>, @crc_alg)
-        <<uint16::16, crc>>
-      end
+    defp add_crcs(state, <<>>), do: state
+
+    defp add_crcs(state, <<val::2-bytes, rest::binary>>) do
+      {next_state, crc} = crc(state, val)
+      this_part = <<val::2-bytes, crc>>
+      add_crcs(%{next_state | acc: state.acc <> this_part}, rest)
+    end
+
+    defp crc(%{crc_injection_count: 0} = state, v) do
+      {state, :cerlc.calc_crc(v, @crc_alg)}
+    end
+
+    defp crc(%{crc_injection_count: n} = state, v) do
+      {%{state | crc_injection_count: n - 1}, :cerlc.calc_crc(v, @crc_alg) |> Bitwise.bxor(1)}
     end
   end
 end
