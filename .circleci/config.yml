@@ -55,6 +55,22 @@ jobs:
           paths:
             - _build
             - deps
+  publish:
+    docker:
+      - image: hexpm/elixir:1.18.2-erlang-27.2.1-alpine-3.21.2
+    steps:
+      - checkout
+      - run:
+          name: Publish GitHub release
+          command: |
+            apk add --no-cache github-cli
+            sed -n "/^## $CIRCLE_TAG/,/^## /p" CHANGELOG.md | sed '1d; /^## /d' > RELEASE_NOTES
+            gh release create $CIRCLE_TAG --notes "$(cat RELEASE_NOTES)"
+      - run:
+          name: Publish to hex.pm
+          command: |
+            mix deps.get
+            mix hex.publish --yes
 
 workflows:
   checks:
@@ -64,3 +80,14 @@ workflows:
           matrix:
             parameters:
               tag: *tags
+          filters:
+            tags:
+              only: /.*/
+      - publish:
+          requires:
+            - build-test
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
