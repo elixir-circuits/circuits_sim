@@ -108,7 +108,7 @@ defmodule CircuitsSim.I2C.I2CServer do
   @impl GenServer
   def handle_call({:read, count}, _from, state) do
     {result, new_state} = do_read(state, count)
-    {:reply, {:ok, result}, new_state}
+    {:reply, result, new_state}
   end
 
   def handle_call({:write, data}, _from, state) do
@@ -118,7 +118,7 @@ defmodule CircuitsSim.I2C.I2CServer do
 
   def handle_call({:write_read, data, read_count}, _from, state) do
     {result, new_state} = do_write_read(state, IO.iodata_to_binary(data), read_count)
-    {:reply, {:ok, result}, new_state}
+    {:reply, result, new_state}
   end
 
   def handle_call(:render, _from, state) do
@@ -175,7 +175,7 @@ defmodule CircuitsSim.I2C.I2CServer do
 
   defp simple_read(state, 0, acc) do
     result = acc |> Enum.reverse() |> :binary.list_to_bin()
-    {result, state}
+    {{:ok, result}, state}
   end
 
   defp simple_read(state, count, acc) do

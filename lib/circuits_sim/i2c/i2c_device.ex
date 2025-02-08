@@ -7,8 +7,12 @@ defprotocol CircuitsSim.I2C.I2CDevice do
 
   @doc """
   Read count bytes
+
+  The first item in the returned tuple is what's returned from the original
+  call to Circuits.I2C.read/2. Try to make the errors consistent with that
+  function if possible.
   """
-  @spec read(t(), non_neg_integer()) :: {binary(), t()}
+  @spec read(t(), non_neg_integer()) :: {{:ok, binary()} | {:error, any()}, t()}
   def read(dev, count)
 
   @doc """
@@ -20,7 +24,7 @@ defprotocol CircuitsSim.I2C.I2CDevice do
   @doc """
   Write data to the device and immediately follow it with a read
   """
-  @spec write_read(t(), binary(), non_neg_integer()) :: {binary(), t()}
+  @spec write_read(t(), binary(), non_neg_integer()) :: {{:ok, binary()} | {:error, any()}, t()}
   def write_read(dev, data, read_count)
 
   @doc """

@@ -77,16 +77,16 @@ defmodule CircuitsSim.Device.SGP30 do
     @impl I2CDevice
     def read(%{current: :iaq_measure} = state, count) do
       result = binary_for_measure(state) |> trim_pad(count)
-      {result, %{state | current: nil}}
+      {{:ok, result}, %{state | current: nil}}
     end
 
     def read(%{current: :iaq_measure_raw} = state, count) do
       result = binary_for_measure_raw(state) |> trim_pad(count)
-      {result, %{state | current: nil}}
+      {{:ok, result}, %{state | current: nil}}
     end
 
     def read(state, count) do
-      {:binary.copy(<<0>>, count), %{state | current: nil}}
+      {{:ok, :binary.copy(<<0>>, count)}, %{state | current: nil}}
     end
 
     @impl I2CDevice
@@ -98,7 +98,7 @@ defmodule CircuitsSim.Device.SGP30 do
     @impl I2CDevice
     def write_read(state, <<0x36, 0x82>>, count) do
       result = binary_for_serial(state) |> trim_pad(count)
-      {result, %{state | current: nil}}
+      {{:ok, result}, %{state | current: nil}}
     end
 
     def write_read(state, _to_write, read_count) do

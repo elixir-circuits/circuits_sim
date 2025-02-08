@@ -57,7 +57,7 @@ defmodule CircuitsSim.Device.VEML7700 do
 
     @impl I2CDevice
     def read(state, count) do
-      {:binary.copy(<<0>>, count), state}
+      {{:ok, :binary.copy(<<0>>, count)}, state}
     end
 
     @impl I2CDevice
@@ -82,41 +82,41 @@ defmodule CircuitsSim.Device.VEML7700 do
     @impl I2CDevice
     def write_read(state, <<@cmd_als_config>>, read_count) do
       result = <<state.als_config::little-16>> |> trim_pad(read_count)
-      {result, state}
+      {{:ok, result}, state}
     end
 
     def write_read(state, <<@cmd_als_threshold_high>>, read_count) do
       result = <<state.als_threshold_high>> |> trim_pad(read_count)
-      {result, state}
+      {{:ok, result}, state}
     end
 
     def write_read(state, <<@cmd_als_threshold_low>>, read_count) do
       result = <<state.als_threshold_low::little-16>> |> trim_pad(read_count)
-      {result, state}
+      {{:ok, result}, state}
     end
 
     def write_read(state, <<@cmd_als_power_saving>>, read_count) do
       result = <<state.als_power_saving::little-16>> |> trim_pad(read_count)
-      {result, state}
+      {{:ok, result}, state}
     end
 
     def write_read(state, <<@cmd_als_output>>, read_count) do
       result = <<state.als_output::little-16>> |> trim_pad(read_count)
-      {result, state}
+      {{:ok, result}, state}
     end
 
     def write_read(state, <<@cmd_white_output>>, read_count) do
       result = <<state.white_output::little-16>> |> trim_pad(read_count)
-      {result, state}
+      {{:ok, result}, state}
     end
 
     def write_read(state, <<@cmd_interrupt_status>>, read_count) do
       result = <<state.interrupt_status::little-16>> |> trim_pad(read_count)
-      {result, state}
+      {{:ok, result}, state}
     end
 
     def write_read(state, _to_write, read_count) do
-      {:binary.copy(<<0>>, read_count), state}
+      {{:ok, :binary.copy(<<0>>, read_count)}, state}
     end
 
     defp trim_pad(x, count) when byte_size(x) >= count, do: :binary.part(x, 0, count)

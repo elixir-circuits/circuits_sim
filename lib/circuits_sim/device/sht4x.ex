@@ -76,8 +76,7 @@ defmodule CircuitsSim.Device.SHT4X do
 
     @impl I2CDevice
     def read(%{current: :serial_number} = state, count) do
-      new_state = binary_for_serial_number(state)
-      {trim_pad(new_state.acc, count), %{new_state | current: nil, acc: <<>>}}
+      state |> binary_for_serial_number() |> flush_read_to_result(count)
     end
 
     def read(%{current: op} = state, count)
@@ -86,12 +85,15 @@ defmodule CircuitsSim.Device.SHT4X do
                :measure_medium_repeatability,
                :measure_low_repeatability
              ] do
-      new_state = raw_sample(state)
-      {trim_pad(new_state.acc, count), %{new_state | current: nil, acc: <<>>}}
+      state |> raw_sample() |> flush_read_to_result(count)
     end
 
     def read(state, count) do
-      {:binary.copy(<<0>>, count), %{state | current: nil}}
+      flush_read_to_result(state, count)
+    end
+
+    defp flush_read_to_result(state, count) do
+      {{:ok, trim_pad(state.acc, count)}, %{state | current: nil, acc: <<>>}}
     end
 
     @impl I2CDevice
@@ -103,7 +105,7 @@ defmodule CircuitsSim.Device.SHT4X do
 
     @impl I2CDevice
     def write_read(state, _to_write, read_count) do
-      {:binary.copy(<<0>>, read_count), %{state | current: nil}}
+      {{:ok, :binary.copy(<<0>>, read_count)}, %{state | current: nil}}
     end
 
     defp trim_pad(x, count) when byte_size(x) >= count, do: :binary.part(x, 0, count)

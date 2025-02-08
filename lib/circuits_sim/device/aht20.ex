@@ -41,11 +41,11 @@ defmodule CircuitsSim.Device.AHT20 do
     @impl I2CDevice
     def read(%{current: :measure} = state, count) do
       result = raw_sample(state) |> trim_pad(count)
-      {result, %{state | current: nil}}
+      {{:ok, result}, %{state | current: nil}}
     end
 
     def read(state, count) do
-      {:binary.copy(<<0>>, count), %{state | current: nil}}
+      {{:ok, :binary.copy(<<0>>, count)}, %{state | current: nil}}
     end
 
     @impl I2CDevice
@@ -56,7 +56,7 @@ defmodule CircuitsSim.Device.AHT20 do
 
     @impl I2CDevice
     def write_read(state, _to_write, read_count) do
-      {:binary.copy(<<0>>, read_count), %{state | current: :reset}}
+      {{:ok, :binary.copy(<<0>>, read_count)}, %{state | current: :reset}}
     end
 
     defp trim_pad(x, count) when byte_size(x) >= count, do: :binary.part(x, 0, count)

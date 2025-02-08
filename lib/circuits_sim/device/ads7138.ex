@@ -38,7 +38,7 @@ defmodule CircuitsSim.Device.ADS7138 do
       # for reading, but we'll include it here just in case.
       last = state.current + count
       result = for reg <- state.current..last, into: <<>>, do: read_register(state, reg)
-      {result, %{state | current: last}}
+      {{:ok, result}, %{state | current: last}}
     end
 
     @impl I2CDevice
@@ -63,13 +63,13 @@ defmodule CircuitsSim.Device.ADS7138 do
 
     @impl I2CDevice
     def write_read(state, <<@single_register_read, register>>, 1) do
-      {read_register(state, register), %{state | current: register}}
+      {{:ok, read_register(state, register)}, %{state | current: register}}
     end
 
     def write_read(state, <<@continuous_register_read, register>>, count) do
       last = state.current + count
       result = for reg <- state.current..last, into: <<>>, do: read_register(state, reg)
-      {result, %{state | current: register}}
+      {{:ok, result}, %{state | current: register}}
     end
 
     @impl I2CDevice

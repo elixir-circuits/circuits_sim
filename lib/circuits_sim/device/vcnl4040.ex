@@ -86,7 +86,7 @@ defmodule CircuitsSim.Device.VCNL4040 do
 
     @impl I2CDevice
     def read(state, count) do
-      {:binary.copy(<<0>>, count), state}
+      {{:ok, :binary.copy(<<0>>, count)}, state}
     end
 
     @impl I2CDevice
@@ -178,27 +178,27 @@ defmodule CircuitsSim.Device.VCNL4040 do
 
     @impl I2CDevice
     def write_read(state, <<@ps_data_register>>, 2) do
-      {<<state.proximity_raw::little-16>>, state}
+      {{:ok, <<state.proximity_raw::little-16>>}, state}
     end
 
     def write_read(state, <<@als_data_register>>, 2) do
-      {<<state.ambient_light_raw::little-16>>, state}
+      {{:ok, <<state.ambient_light_raw::little-16>>}, state}
     end
 
     def write_read(state, <<@white_data_register>>, 2) do
-      {<<state.white_light_raw::little-16>>, state}
+      {{:ok, <<state.white_light_raw::little-16>>}, state}
     end
 
     def write_read(state, <<@als_ps_interrupt_flag_register>>, 2) do
-      {<<0x00, 0x00>>, state}
+      {{:ok, <<0x00, 0x00>>}, state}
     end
 
     def write_read(state, <<@cmd_device_id>>, 2) do
-      {<<0x86, 0x01>>, state}
+      {{:ok, <<0x86, 0x01>>}, state}
     end
 
     def write_read(state, _value, read_count) do
-      {:binary.copy(<<0>>, read_count), state}
+      {{:ok, :binary.copy(<<0>>, read_count)}, state}
     end
 
     @impl I2CDevice
