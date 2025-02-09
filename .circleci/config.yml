@@ -61,9 +61,12 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install packages
+          command: |
+            apk add --no-cache build-base linux-headers git github-cli
+      - run:
           name: Publish GitHub release
           command: |
-            apk add --no-cache github-cli
             sed -n "/^## $CIRCLE_TAG/,/^## /p" CHANGELOG.md | sed '1d; /^## /d' > RELEASE_NOTES
             gh release create $CIRCLE_TAG --notes "$(cat RELEASE_NOTES)"
       - run:
