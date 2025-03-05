@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 Masatoshi Nishiguchi
+# SPDX-FileCopyrightText: 2025 Frank Hunleth
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 defmodule CircuitsSim.Device.SGP30 do
   @moduledoc """
   Sensirion SGP30 gas sensor

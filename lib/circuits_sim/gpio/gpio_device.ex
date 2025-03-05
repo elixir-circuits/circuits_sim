@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Frank Hunleth
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 defprotocol CircuitsSim.GPIO.GPIODevice do
   @moduledoc """
   A protocol for GPIO devices

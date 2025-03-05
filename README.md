@@ -1,10 +1,11 @@
 # CircuitsSim
 
 [![Hex version](https://img.shields.io/hexpm/v/circuits_sim.svg "Hex version")](https://hex.pm/packages/circuits_sim)
-[![API docs](https://img.shields.io/hexpm/v/circuits_sim.svg?label=hexdocs "API docs")](https://hexdocs.pm/circuits_sim/)
-[![CircleCI](https://circleci.com/gh/elixir-circuits/circuits_sim.svg?style=svg)](https://circleci.com/gh/elixir-circuits/circuits_sim)
+[![API docs](https://img.shields.io/hexpm/v/circuits_sim.svg?label=hexdocs "API docs")](https://hexdocs.pm/circuits_sim/CircuitsSim.html)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/elixir-circuits/circuits_sim/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/elixir-circuits/circuits_sim/tree/main)
+[![REUSE status](https://api.reuse.software/badge/github.com/elixir-circuits/circuits_sim)](https://api.reuse.software/info/github.com/elixir-circuits/circuits_sim)
 
-Interact with simulated I2C devices
+Interact with simulated hardware
 
 ## Using
 

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Frank Hunleth
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 defprotocol CircuitsSim.SPI.SPIDevice do
   @moduledoc """
   A protocol for SPI devices

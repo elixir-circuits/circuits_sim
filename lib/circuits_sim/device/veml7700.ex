@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 Masatoshi Nishiguchi
+# SPDX-FileCopyrightText: 2025 Frank Hunleth
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 defmodule CircuitsSim.Device.VEML7700 do
   @moduledoc """
   Vishay VEML7700 ambient light sensors. This sim works for VEML6030 as well.

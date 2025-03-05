@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 Frank Hunleth
+# SPDX-FileCopyrightText: 2023 Jon Carstens
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 defmodule CircuitsSim.I2C.Bus do
   @moduledoc false
 

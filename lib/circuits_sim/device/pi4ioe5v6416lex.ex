@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 Frank Hunleth
+# SPDX-FileCopyrightText: 2023 Jon Carstens
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 defmodule CircuitsSim.Device.PI4IOE5V6416LEX do
   @moduledoc """
   Low-Voltage Translating 16-bit I2C-bus I/O Expander

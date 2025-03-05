@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Frank Hunleth
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 defmodule CircuitsSim.I2C.Backend do
   @moduledoc """
   Circuits.I2C backend for virtual I2C devices

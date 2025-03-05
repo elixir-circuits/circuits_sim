@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 Masatoshi Nishiguchi
+# SPDX-FileCopyrightText: 2025 Frank Hunleth
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 defmodule CircuitsSim.Device.AHT20 do
   @moduledoc """
   AHT20 temperature and humidity sensor

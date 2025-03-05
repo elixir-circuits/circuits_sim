@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Frank Hunleth
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 defprotocol CircuitsSim.I2C.I2CDevice do
   @moduledoc """
   A protocol for I2C devices

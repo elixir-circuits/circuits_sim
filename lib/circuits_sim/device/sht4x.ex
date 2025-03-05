@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 Masatoshi Nishiguchi
+# SPDX-FileCopyrightText: 2024 Frank Hunleth
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 defmodule CircuitsSim.Device.SHT4X do
   @moduledoc """
   Sensirion SHT4x sensors

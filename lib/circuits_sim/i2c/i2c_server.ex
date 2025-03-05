@@ -1,3 +1,10 @@
+# SPDX-FileCopyrightText: 2023 Frank Hunleth
+# SPDX-FileCopyrightText: 2023 Jon Carstens
+# SPDX-FileCopyrightText: 2023 Masatoshi Nishiguchi
+# SPDX-FileCopyrightText: 2024 Filipe Alves
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 defmodule CircuitsSim.I2C.I2CServer do
   @moduledoc false
 

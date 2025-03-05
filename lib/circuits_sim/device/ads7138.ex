@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 Frank Hunleth
+# SPDX-FileCopyrightText: 2023 Jon Carstens
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 defmodule CircuitsSim.Device.ADS7138 do
   @moduledoc """
   MCP23008 8-bit I/O Expander

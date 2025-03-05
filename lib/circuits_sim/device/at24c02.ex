@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 Frank Hunleth
+# SPDX-FileCopyrightText: 2023 Jon Carstens
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 defmodule CircuitsSim.Device.AT24C02 do
   @moduledoc """
   This is a 2 Kb (256 byte) I2C EEPROM

@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 Frank Hunleth
+# SPDX-FileCopyrightText: 2023 Jon Carstens
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 defmodule CircuitsSim.Device.B5ZE do
   @moduledoc """
   Abracon AB-RTCMC-32.768kHz-IBO5-S3 RTC

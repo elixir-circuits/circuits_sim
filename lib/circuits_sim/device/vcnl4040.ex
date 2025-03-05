@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 Eric Oestrich
+# SPDX-FileCopyrightText: 2025 Frank Hunleth
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 defmodule CircuitsSim.Device.VCNL4040 do
   @moduledoc """
   VCNL4040 ambient light and proximity sensor

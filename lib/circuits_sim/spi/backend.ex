@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Frank Hunleth
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 defmodule CircuitsSim.SPI.Backend do
   @moduledoc """
   Circuits.SPI backend for virtual SPI devices

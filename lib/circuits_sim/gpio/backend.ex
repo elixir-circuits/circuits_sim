@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 Frank Hunleth
+# SPDX-FileCopyrightText: 2024 Ryota Kinukawa
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 defmodule CircuitsSim.GPIO.Backend do
   @moduledoc """
   Circuits.GPIO backend for virtual GPIO devices
