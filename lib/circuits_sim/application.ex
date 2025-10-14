@@ -23,22 +23,6 @@ defmodule CircuitsSim.Application do
 
   defp add_devices() do
     config = Application.get_env(:circuits_sim, :config, %{})
-
-    Enum.each(config, fn device_options ->
-      {:ok, _} =
-        DynamicSupervisor.start_child(
-          CircuitSim.DeviceSupervisor,
-          device_spec(device_options)
-        )
-    end)
-  end
-
-  defp device_spec(device) when is_atom(device) do
-    {device, []}
-  end
-
-  defp device_spec({device, options} = device_options)
-       when is_atom(device) and is_list(options) do
-    device_options
+    Enum.each(config, &CircuitsSim.add_device/1)
   end
 end
