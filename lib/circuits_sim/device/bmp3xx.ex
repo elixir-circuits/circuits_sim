@@ -186,12 +186,18 @@ defmodule CircuitsSim.Device.BMP3XX do
 
     @impl SimpleI2CDevice
     def render(state) do
-      "Sensor type: #{state.sensor_type}"
+      state
     end
 
     @impl SimpleI2CDevice
     def handle_message(state, _message) do
       {:not_implemented, state}
+    end
+  end
+
+  defimpl String.Chars do
+    def to_string(state) do
+      "Sensor type: #{state.sensor_type}"
     end
   end
 end

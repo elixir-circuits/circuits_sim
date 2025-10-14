@@ -113,22 +113,29 @@ defmodule CircuitsSim.Device.MCP23008 do
 
     @impl SimpleI2CDevice
     def render(state) do
+      state
+    end
+
+    @impl SimpleI2CDevice
+    def handle_message(state, _message) do
+      state
+    end
+  end
+
+  defimpl String.Chars do
+    def to_string(state) do
       {pin, io, values} =
         for i <- 7..0//-1 do
           mask = Bitwise.bsl(1, i)
 
           iodir = if Bitwise.band(state.iodir, mask) == 0, do: "O", else: "I"
           gpio = if Bitwise.band(state.gpio, mask) == 0, do: "0", else: "1"
-          {to_string(i), iodir, gpio}
+          {Kernel.to_string(i), iodir, gpio}
         end
         |> unzip3()
 
       ["     Pin: ", pin, "\n   IODIR: ", io, "\n    GPIO: ", values, "\n"]
-    end
-
-    @impl SimpleI2CDevice
-    def handle_message(state, _message) do
-      state
+      |> IO.iodata_to_binary()
     end
 
     defp unzip3(list, acc \\ {[], [], []})

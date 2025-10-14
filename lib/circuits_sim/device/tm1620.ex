@@ -234,6 +234,19 @@ defmodule CircuitsSim.Device.TM1620 do
 
     @impl SPIDevice
     def render(state) do
+      state
+    end
+
+    @impl SPIDevice
+    def handle_message(state, _message) do
+      {:unimplemented, state}
+    end
+  end
+
+  defimpl String.Chars do
+    alias CircuitsSim.Device.TM1620
+
+    def to_string(state) do
       [
         "Mode: #{state.digits} digits, #{14 - state.digits} segments\n",
         "Brightness: #{state.pulse16}/16\n",
@@ -243,11 +256,7 @@ defmodule CircuitsSim.Device.TM1620 do
           :binary_clock -> TM1620.binary_clock(state.data)
         end
       ]
-    end
-
-    @impl SPIDevice
-    def handle_message(state, _message) do
-      {:unimplemented, state}
+      |> IO.iodata_to_binary()
     end
   end
 end

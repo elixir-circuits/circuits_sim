@@ -17,7 +17,7 @@ defmodule CircuitsSim.Device.AHT20Test do
     AHT20Sim.set_humidity_rh(i2c_bus, @i2c_address, 12.3)
     AHT20Sim.set_temperature_c(i2c_bus, @i2c_address, 32.1)
 
-    assert I2CServer.render(i2c_bus, @i2c_address) ==
+    assert to_string(I2CServer.render(i2c_bus, @i2c_address)) ==
              "Temperature: 32.1°C, Relative humidity: 12.3%"
   end
 

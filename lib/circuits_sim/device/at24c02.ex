@@ -59,6 +59,19 @@ defmodule CircuitsSim.Device.AT24C02 do
 
     @impl SimpleI2CDevice
     def render(state) do
+      state
+    end
+
+    @impl SimpleI2CDevice
+    def handle_message(state, _message) do
+      state
+    end
+  end
+
+  defimpl String.Chars do
+    alias CircuitsSim.Tools
+
+    def to_string(state) do
       header = for i <- 0..15, do: ["  ", Integer.to_string(i, 16)]
 
       [
@@ -72,11 +85,7 @@ defmodule CircuitsSim.Device.AT24C02 do
           [front, Tools.hex_byte(v), term]
         end
       ]
-    end
-
-    @impl SimpleI2CDevice
-    def handle_message(state, _message) do
-      state
+      |> IO.iodata_to_binary()
     end
   end
 end

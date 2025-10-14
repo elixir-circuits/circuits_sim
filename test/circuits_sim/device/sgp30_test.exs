@@ -18,7 +18,7 @@ defmodule CircuitsSim.Device.SGP30Test do
     SGP30Sim.set_h2_raw(i2c_bus, @i2c_address, 13610)
     SGP30Sim.set_ethanol_raw(i2c_bus, @i2c_address, 18858)
 
-    assert I2CServer.render(i2c_bus, @i2c_address) ==
+    assert to_string(I2CServer.render(i2c_bus, @i2c_address)) ==
              "tvoc_ppb: 10, co2_eq_ppm: 410, h2_raw: 13610, ethanol_raw: 18858"
   end
 

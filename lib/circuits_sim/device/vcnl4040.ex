@@ -208,13 +208,7 @@ defmodule CircuitsSim.Device.VCNL4040 do
 
     @impl I2CDevice
     def render(state) do
-      """
-      Ambient light sensor output
-
-      Proximity: #{state.proximity_raw}
-      Ambient Light: #{state.ambient_light_raw}
-      White Light: #{state.white_light_raw}
-      """
+      state
     end
 
     @impl I2CDevice
@@ -228,6 +222,18 @@ defmodule CircuitsSim.Device.VCNL4040 do
 
     def handle_message(state, {:set_white_light, value}) do
       {:ok, %{state | white_light_raw: value}}
+    end
+  end
+
+  defimpl String.Chars do
+    def to_string(state) do
+      """
+      Ambient light sensor output
+
+      Proximity: #{state.proximity_raw}
+      Ambient Light: #{state.ambient_light_raw}
+      White Light: #{state.white_light_raw}
+      """
     end
   end
 end

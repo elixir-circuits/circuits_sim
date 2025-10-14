@@ -129,13 +129,19 @@ defmodule CircuitsSim.Device.VEML7700 do
 
     @impl I2CDevice
     def render(state) do
-      "Ambient light sensor raw output: #{state.als_output}"
+      state
     end
 
     @impl I2CDevice
     @spec handle_message(struct, {:set_state, keyword}) :: {:ok, struct}
     def handle_message(state, {:set_state, kv}) do
       {:ok, struct!(state, kv)}
+    end
+  end
+
+  defimpl String.Chars do
+    def to_string(state) do
+      "Ambient light sensor raw output: #{state.als_output}"
     end
   end
 end
