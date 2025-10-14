@@ -59,6 +59,7 @@ defmodule CircuitsSim.MixProject do
       {:circuits_i2c, "~> 2.0"},
       {:circuits_spi, "~> 2.0"},
       {:circuits_gpio, "~> 2.0"},
+      {:kino, "~> 0.14", optional: true},
       {:bmp280, "~> 0.2.12", only: [:dev, :test]},
       {:bmp3xx, "~> 0.1.5", only: [:dev, :test]},
       {:sgp30, github: "jjcarstens/sgp30", branch: "main", only: [:dev, :test]},
