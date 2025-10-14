@@ -32,9 +32,12 @@ defprotocol CircuitsSim.I2C.I2CDevice do
   def write_read(dev, data, read_count)
 
   @doc """
-  Return the internal state as ASCII art
+  Return the device struct for rendering
+
+  The returned struct should implement both `Kino.Render` for LiveBook visualization
+  and `String.Chars` for CLI output.
   """
-  @spec render(t()) :: IO.ANSI.ansidata()
+  @spec render(t()) :: t()
   def render(dev)
 
   @doc """

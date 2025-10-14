@@ -139,9 +139,7 @@ defmodule CircuitsSim.Device.SHT4X do
 
     @impl I2CDevice
     def render(state) do
-      humidity_rh = Float.round(state.humidity_rh, 3)
-      temperature_c = Float.round(state.temperature_c, 3)
-      "Temperature: #{temperature_c}°C, Relative humidity: #{humidity_rh}%"
+      state
     end
 
     @impl I2CDevice
@@ -186,6 +184,14 @@ defmodule CircuitsSim.Device.SHT4X do
 
     defp crc(%{crc_injection_count: n} = state, v) do
       {%{state | crc_injection_count: n - 1}, :cerlc.calc_crc(v, @crc_alg) |> Bitwise.bxor(1)}
+    end
+  end
+
+  defimpl String.Chars do
+    def to_string(state) do
+      humidity_rh = Float.round(state.humidity_rh, 3)
+      temperature_c = Float.round(state.temperature_c, 3)
+      "Temperature: #{temperature_c}°C, Relative humidity: #{humidity_rh}%"
     end
   end
 end

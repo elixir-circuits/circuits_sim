@@ -81,7 +81,7 @@ defmodule CircuitsSim.Device.GPIOButton do
 
     @impl GPIODevice
     def render(state) do
-      "Button #{state.state} connected with #{state.connection}"
+      state
     end
 
     @impl GPIODevice
@@ -102,6 +102,12 @@ defmodule CircuitsSim.Device.GPIOButton do
     @impl GPIODevice
     def handle_info(state, :release) do
       %{state | state: :released}
+    end
+  end
+
+  defimpl String.Chars do
+    def to_string(state) do
+      "Button #{state.state} connected with #{state.connection}"
     end
   end
 end

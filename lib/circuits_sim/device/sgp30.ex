@@ -115,13 +115,7 @@ defmodule CircuitsSim.Device.SGP30 do
 
     @impl I2CDevice
     def render(state) do
-      [
-        "tvoc_ppb: #{state.tvoc_ppb}",
-        "co2_eq_ppm: #{state.co2_eq_ppm}",
-        "h2_raw: #{state.h2_raw}",
-        "ethanol_raw: #{state.ethanol_raw}"
-      ]
-      |> Enum.join(", ")
+      state
     end
 
     @impl I2CDevice
@@ -164,6 +158,18 @@ defmodule CircuitsSim.Device.SGP30 do
         crc = :cerlc.calc_crc(<<uint16::16>>, @crc_alg)
         <<uint16::16, crc>>
       end
+    end
+  end
+
+  defimpl String.Chars do
+    def to_string(state) do
+      [
+        "tvoc_ppb: #{state.tvoc_ppb}",
+        "co2_eq_ppm: #{state.co2_eq_ppm}",
+        "h2_raw: #{state.h2_raw}",
+        "ethanol_raw: #{state.ethanol_raw}"
+      ]
+      |> Enum.join(", ")
     end
   end
 end

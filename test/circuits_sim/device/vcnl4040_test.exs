@@ -19,7 +19,7 @@ defmodule CircuitsSim.Device.VCNL4040Test do
 
     rendered = I2CServer.render(i2c_bus, @i2c_address)
 
-    assert rendered ==
+    assert to_string(rendered) ==
              "Ambient light sensor output\n\nProximity: 0\nAmbient Light: 0\nWhite Light: 0\n"
   end
 

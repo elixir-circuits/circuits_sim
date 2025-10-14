@@ -40,22 +40,31 @@ defmodule CircuitsSim.Device.PI4IOE5V6416LEX do
 
     @impl SimpleI2CDevice
     def render(state) do
-      for {reg, data} <- state.registers do
-        [
-          "  ",
-          Tools.hex_byte(reg),
-          ": ",
-          for(<<b::1 <- data>>, do: to_string(b)),
-          " (",
-          reg_name(reg),
-          ")\n"
-        ]
-      end
+      state
     end
 
     @impl SimpleI2CDevice
     def handle_message(state, _message) do
       state
+    end
+  end
+
+  defimpl String.Chars do
+    alias CircuitsSim.Tools
+
+    def to_string(state) do
+      for {reg, data} <- state.registers do
+        [
+          "  ",
+          Tools.hex_byte(reg),
+          ": ",
+          for(<<b::1 <- data>>, do: Kernel.to_string(b)),
+          " (",
+          reg_name(reg),
+          ")\n"
+        ]
+      end
+      |> IO.iodata_to_binary()
     end
 
     defp reg_name(0x00), do: "Input port 0"

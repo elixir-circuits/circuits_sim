@@ -37,11 +37,8 @@ defmodule CircuitsSim.Device.GPIOLED do
 
     @impl GPIODevice
     def render(state) do
-      ["LED ", led_string(state.value)]
+      state
     end
-
-    defp led_string(0), do: "off"
-    defp led_string(1), do: "on"
 
     @impl GPIODevice
     def handle_message(state, _message) do
@@ -51,6 +48,13 @@ defmodule CircuitsSim.Device.GPIOLED do
     @impl GPIODevice
     def handle_info(state, :release) do
       state
+    end
+  end
+
+  defimpl String.Chars do
+    def to_string(state) do
+      status = if state.value == 1, do: "on", else: "off"
+      "LED #{status}"
     end
   end
 end

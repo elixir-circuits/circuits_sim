@@ -79,17 +79,7 @@ defmodule CircuitsSim.Device.ADS7138 do
 
     @impl I2CDevice
     def render(state) do
-      for {reg, data} <- state.registers do
-        [
-          "  ",
-          Tools.hex_byte(reg),
-          ": ",
-          for(<<b::1 <- data>>, do: to_string(b)),
-          " (",
-          reg_name(reg),
-          ")\n"
-        ]
-      end
+      state
     end
 
     @impl I2CDevice
@@ -108,6 +98,25 @@ defmodule CircuitsSim.Device.ADS7138 do
     end
 
     defp write_register(state, _reg, _val), do: state
+  end
+
+  defimpl String.Chars do
+    alias CircuitsSim.Tools
+
+    def to_string(state) do
+      for {reg, data} <- state.registers, into: [] do
+        [
+          "  ",
+          Tools.hex_byte(reg),
+          ": ",
+          for(<<b::1 <- data>>, do: Kernel.to_string(b)),
+          " (",
+          reg_name(reg),
+          ")\n"
+        ]
+      end
+      |> IO.iodata_to_binary()
+    end
 
     defp reg_name(0x0), do: "SYSTEM_STATUS"
     defp reg_name(0x1), do: "GENERAL_CFG"

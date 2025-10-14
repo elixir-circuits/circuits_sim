@@ -44,9 +44,15 @@ defmodule CircuitsSim do
   defp i2c_bus_info(bus_name) do
     result =
       for address <- 0..127 do
-        info = I2CServer.render(bus_name, address)
+        device_struct = I2CServer.render(bus_name, address)
         hex_addr = CircuitsSim.Tools.hex_byte(address)
-        if info != [], do: ["Device 0x#{hex_addr}: \n", info, "\n"], else: []
+
+        # Empty list means no device at this address
+        if device_struct != [] do
+          ["Device 0x#{hex_addr}: \n", to_string(device_struct), "\n"]
+        else
+          []
+        end
       end
 
     ["=== ", bus_name, " ===\n", result]
@@ -58,8 +64,8 @@ defmodule CircuitsSim do
   end
 
   defp spi_bus_info(bus_name) do
-    result = SPIServer.render(bus_name)
-    ["=== ", bus_name, " ===\n", result]
+    device_struct = SPIServer.render(bus_name)
+    ["=== ", bus_name, " ===\n", to_string(device_struct)]
   end
 
   defp gpio_info() do
@@ -68,7 +74,7 @@ defmodule CircuitsSim do
   end
 
   defp gpio_spec_info(gpio_spec) do
-    result = GPIOServer.render(gpio_spec)
-    ["=== GPIO ", inspect(gpio_spec), " ===\n", result]
+    device_struct = GPIOServer.render(gpio_spec)
+    ["=== GPIO ", inspect(gpio_spec), " ===\n", to_string(device_struct)]
   end
 end

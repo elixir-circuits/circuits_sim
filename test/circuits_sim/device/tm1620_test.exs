@@ -19,8 +19,7 @@ defmodule CircuitsSim.Device.TM1620Test do
 
     actual =
       SPIDevice.render(leds)
-      |> IO.ANSI.format(false)
-      |> IO.chardata_to_string()
+      |> to_string()
 
     expected =
       [

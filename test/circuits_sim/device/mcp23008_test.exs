@@ -28,7 +28,7 @@ defmodule CircuitsSim.Device.MCP23008Test do
       |> SimpleI2CDevice.write_register(0, 0xF0)
       |> SimpleI2CDevice.write_register(9, 0x05)
 
-    actual = SimpleI2CDevice.render(mcp23008) |> IO.ANSI.format(false) |> IO.chardata_to_string()
+    actual = SimpleI2CDevice.render(mcp23008) |> to_string()
 
     expected = """
          Pin: 76543210

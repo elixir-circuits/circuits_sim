@@ -69,9 +69,7 @@ defmodule CircuitsSim.Device.AHT20 do
 
     @impl I2CDevice
     def render(state) do
-      humidity_rh = Float.round(state.humidity_rh * 1.0, 3)
-      temperature_c = Float.round(state.temperature_c * 1.0, 3)
-      "Temperature: #{temperature_c}°C, Relative humidity: #{humidity_rh}%"
+      state
     end
 
     @impl I2CDevice
@@ -87,6 +85,14 @@ defmodule CircuitsSim.Device.AHT20 do
       raw_humidity = round(1_048_576 * state.humidity_rh / 100)
       raw_temperature = round((state.temperature_c + 50) * 1_048_576 / 200)
       <<0, raw_humidity::20, raw_temperature::20, 0>>
+    end
+  end
+
+  defimpl String.Chars do
+    def to_string(state) do
+      humidity_rh = Float.round(state.humidity_rh, 3)
+      temperature_c = Float.round(state.temperature_c, 3)
+      "Temperature: #{temperature_c}°C, Relative humidity: #{humidity_rh}%"
     end
   end
 end
