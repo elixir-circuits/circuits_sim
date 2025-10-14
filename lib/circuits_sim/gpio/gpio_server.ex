@@ -49,6 +49,10 @@ defmodule CircuitsSim.GPIO.GPIOServer do
   end
 
   # Helper for constructing the via_name for GPIODevice servers
+  defp via_name(%CircuitsSim.GPIO.Handle{gpio_spec: gpio_spec}) do
+    DeviceRegistry.via_name(:gpio, gpio_spec, 0)
+  end
+
   defp via_name(gpio_spec) do
     DeviceRegistry.via_name(:gpio, gpio_spec, 0)
   end
