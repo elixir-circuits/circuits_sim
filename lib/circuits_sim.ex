@@ -12,6 +12,20 @@ defmodule CircuitsSim do
   alias CircuitsSim.I2C.I2CServer
   alias CircuitsSim.SPI.SPIServer
 
+  def add_device(device_options) do
+    {:ok, _} =
+      DynamicSupervisor.start_child(CircuitSim.DeviceSupervisor, device_spec(device_options))
+  end
+
+  defp device_spec(device) when is_atom(device) do
+    {device, []}
+  end
+
+  defp device_spec({device, options} = device_options)
+       when is_atom(device) and is_list(options) do
+    device_options
+  end
+
   @doc """
   Show information about all simulated devices
   """
