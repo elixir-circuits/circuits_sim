@@ -1,0 +1,125 @@
+# CircuitsSim in Kino Playground
+
+```elixir
+Mix.install(
+  [
+    {:kino, "~> 0.17"},
+    {:circuits_sim, path: Path.expand("../", __DIR__)}
+  ]
+)
+Application.put_env(:circuits_gpio, :default_backend, CircuitsSim.GPIO.Backend)
+Application.put_env(:circuits_i2c, :default_backend, CircuitsSim.I2C.Backend)
+Application.put_env(:circuits_spi, :default_backend, CircuitsSim.SPI.Backend)
+
+devices = [
+    {CircuitsSim.Device.MCP23008, bus_name: "i2c-0", address: 0x20},
+    {CircuitsSim.Device.AT24C02, bus_name: "i2c-0", address: 0x50},
+    {CircuitsSim.Device.ADS7138, bus_name: "i2c-1", address: 0x10},
+    {CircuitsSim.Device.MCP23008, bus_name: "i2c-1", address: 0x20},
+    {CircuitsSim.Device.MCP23008, bus_name: "i2c-1", address: 0x21},
+    {CircuitsSim.Device.AHT20, bus_name: "i2c-1", address: 0x38},
+    {CircuitsSim.Device.SHT4X, bus_name: "i2c-1", address: 0x44},
+    {CircuitsSim.Device.VEML7700, bus_name: "i2c-1", address: 0x48},
+    {CircuitsSim.Device.SGP30, bus_name: "i2c-1", address: 0x58},
+    {CircuitsSim.Device.BMP3XX, bus_name: "i2c-1", address: 0x77},
+    {CircuitsSim.Device.TM1620, bus_name: "spidev0.0", render: :binary_clock},
+    {CircuitsSim.Device.GPIOLED, gpio_spec: 10},
+    {CircuitsSim.Device.GPIOButton, gpio_spec: 11}
+  ]
+
+Enum.each(devices, &CircuitsSim.add_device/1)
+
+```
+
+## GPIO Button & LED
+
+Before you can access GPIO devices you need to open a handle. Good practice is to close it when you're done.
+
+```elixir
+{:ok, gpio_led} = Circuits.GPIO.open(10, :output)
+{:ok, gpio_button} = Circuits.GPIO.open(11, :input)
+:ok
+```
+
+With the GPIO handle we can now simulate a hardware button on your device. Clicking the button will act like a short button press. The GPIO pin will be pressed and released shortly after.
+
+```elixir
+CircuitsSim.Kino.button(gpio_button)
+```
+
+We can also add an LED with the GPIO handle.
+
+```elixir
+CircuitsSim.Kino.led(gpio_led)
+```
+
+A simple approach would be to turn on the LED when the button is pressed and turn it off when the button is pressed again. We can use `Kino.listen/2` which will spawn a process. Then using `Circuits.GPIO.set_interrupts/3` we can subscribe the process for button press events.
+Often you would implement something like this in a GenServer in your application.
+
+Evaluate and try pushing the button.
+
+<!-- livebook:{"continue_on_error":true} -->
+
+```elixir
+kino_listen_pid = Kino.listen(100, fn _x ->
+  receive do
+    {_, _, _, 0} ->
+      # Toggle the LED on a button press
+      w = Integer.mod(Circuits.GPIO.read(gpio_led) + 1, 2)
+      Circuits.GPIO.write(gpio_led, w)
+  end
+end)
+
+:ok = Circuits.GPIO.set_interrupts(gpio_button, :falling, receiver: kino_listen_pid)
+
+```
+
+## I2C temperature & humidity
+
+You need an open I2C bus to communicate.
+
+```elixir
+{:ok, bus} = Circuits.I2C.open("i2c-1")
+```
+
+We use the simulated Sensirion SHT4x sensor to "measure" temperature & humidity. You can use the slider to update the values.
+
+```elixir
+CircuitsSim.Kino.sht4x(bus, 0x44)
+```
+
+Here is a small sample of what you could do. When the temperature rises the LED is turned on, when the temperature drops is turns the LED off. You can find the LED up on the page.
+
+```elixir
+
+Stream.interval(100)
+|> Stream.scan({nil, nil}, fn _, {_, prev_state} ->
+  # Send measure command (high precision)
+  :ok = Circuits.I2C.write(bus, 0x44, <<0xFD>>)
+  
+  # Wait for measurement (typically ~10ms for high precision)
+  Process.sleep(10)
+  
+  # Read 6 bytes (temp MSB, temp LSB, temp CRC, humidity MSB, humidity LSB, humidity CRC)
+  {:ok, <<temp_raw::16, _temp_crc::8, _rh_raw::16, _rh_crc::8>>} = Circuits.I2C.read(bus, 0x44, 6)
+  
+  # Convert raw values to actual temperature and humidity
+  temperature_c = Float.round(temp_raw * 175 / 65535 - 45,1)
+
+  {prev_state, temperature_c}
+end)
+|> Kino.listen(fn {prev, now} ->
+  # Only write if state changed
+  cond do
+    now > prev -> Circuits.GPIO.write(gpiol, 1)
+    now < prev -> Circuits.GPIO.write(gpiol, 0)
+    true -> :ok
+  end
+end)
+
+
+```
+
+## Try for yourself
+
+Now that you have seen some basic devices. Try adding some more and play around with it.
