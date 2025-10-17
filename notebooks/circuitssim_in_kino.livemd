@@ -111,8 +111,8 @@ end)
 |> Kino.listen(fn {prev, now} ->
   # Only write if state changed
   cond do
-    now > prev -> Circuits.GPIO.write(gpiol, 1)
-    now < prev -> Circuits.GPIO.write(gpiol, 0)
+    now > prev -> Circuits.GPIO.write(gpio_led, 1)
+    now < prev -> Circuits.GPIO.write(gpio_led, 0)
     true -> :ok
   end
 end)
