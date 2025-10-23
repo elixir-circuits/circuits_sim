@@ -36,7 +36,7 @@ defmodule CircuitsSim.Device.GPIOLED do
     end
 
     @impl GPIODevice
-    def render(state) do
+    def snapshot(state) do
       state
     end
 

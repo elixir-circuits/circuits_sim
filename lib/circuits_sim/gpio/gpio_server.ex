@@ -84,9 +84,9 @@ defmodule CircuitsSim.GPIO.GPIOServer do
     GenServer.call(via_name(gpio_spec), {:set_pull_mode, pull_mode})
   end
 
-  @spec render(GPIO.gpio_spec()) :: IO.ANSI.ansidata()
-  def render(gpio_spec) do
-    GenServer.call(via_name(gpio_spec), :render)
+  @spec snapshot(GPIO.gpio_spec()) :: GPIODevice.t()
+  def snapshot(gpio_spec) do
+    GenServer.call(via_name(gpio_spec), :snapshot)
   end
 
   @spec send_message(GPIO.gpio_spec(), any()) :: any()
@@ -136,8 +136,8 @@ defmodule CircuitsSim.GPIO.GPIOServer do
     {:reply, :ok, new_state}
   end
 
-  def handle_call(:render, _from, state) do
-    {:reply, GPIODevice.render(state.device), state}
+  def handle_call(:snapshot, _from, state) do
+    {:reply, GPIODevice.snapshot(state.device), state}
   end
 
   def handle_call({:send_message, message}, _from, state) do

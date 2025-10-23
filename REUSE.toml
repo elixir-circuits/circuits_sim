@@ -3,6 +3,7 @@ version = 1
 [[annotations]]
 path = [
  ".circleci/config.yml",
+ "notebooks/circuitssim_in_kino.livemd",
  ".credo.exs",
  ".formatter.exs",
  ".gitignore",

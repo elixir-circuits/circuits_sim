@@ -18,7 +18,7 @@ defmodule CircuitsSim.Device.TM1620Test do
     {_, leds} = SPIDevice.transfer(leds, <<0x88>>)
 
     actual =
-      SPIDevice.render(leds)
+      SPIDevice.snapshot(leds)
       |> to_string()
 
     expected =

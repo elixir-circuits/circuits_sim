@@ -48,14 +48,14 @@ if Code.ensure_loaded?(Kino) do
       frame = Kino.Frame.new()
 
       # Initial display
-      state = GPIOServer.render(gpio_spec)
+      state = GPIOServer.snapshot(gpio_spec)
       Kino.Frame.render(frame, state)
 
       # Start auto-update loop that only renders on state change
 
       Stream.interval(interval)
       |> Stream.scan({nil, nil}, fn _, {_, prev} ->
-        current_state = GPIOServer.render(gpio_spec)
+        current_state = GPIOServer.snapshot(gpio_spec)
         {prev, current_state}
       end)
       |> Kino.listen(fn
@@ -90,7 +90,7 @@ if Code.ensure_loaded?(Kino) do
 
       # Update display
       update_display = fn ->
-        state = I2CServer.render(bus_name, address)
+        state = I2CServer.snapshot(bus_name, address)
 
         if state != [] do
           Kino.Frame.render(frame, state)
@@ -133,7 +133,7 @@ if Code.ensure_loaded?(Kino) do
 
       # Update display
       update_display = fn ->
-        state = I2CServer.render(bus_name, address)
+        state = I2CServer.snapshot(bus_name, address)
 
         if state != [] do
           Kino.Frame.render(frame, state)
@@ -183,7 +183,7 @@ if Code.ensure_loaded?(Kino) do
 
       # Update display
       update_display = fn ->
-        state = I2CServer.render(bus_name, address)
+        state = I2CServer.snapshot(bus_name, address)
 
         if state != [] do
           Kino.Frame.render(frame, state)
@@ -240,7 +240,7 @@ if Code.ensure_loaded?(Kino) do
 
       # Update display
       update_display = fn ->
-        state = I2CServer.render(bus_name, address)
+        state = I2CServer.snapshot(bus_name, address)
 
         if state != [] do
           Kino.Frame.render(frame, state)
@@ -289,7 +289,7 @@ if Code.ensure_loaded?(Kino) do
 
       # Update display
       update_display = fn ->
-        state = I2CServer.render(bus_name, address)
+        state = I2CServer.snapshot(bus_name, address)
 
         if state != [] do
           Kino.Frame.render(frame, state)

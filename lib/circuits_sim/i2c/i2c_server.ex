@@ -81,9 +81,9 @@ defmodule CircuitsSim.I2C.I2CServer do
     gen_call(bus_name, address, {:write_read, data, read_count})
   end
 
-  @spec render(String.t(), I2C.address()) :: IO.ANSI.ansidata()
-  def render(bus_name, address) do
-    case gen_call(bus_name, address, :render) do
+  @spec snapshot(String.t(), I2C.address()) :: I2CDevice.t() | SimpleI2CDevice.t() | []
+  def snapshot(bus_name, address) do
+    case gen_call(bus_name, address, :snapshot) do
       {:error, _} -> []
       info -> info
     end
@@ -132,8 +132,8 @@ defmodule CircuitsSim.I2C.I2CServer do
     {:reply, result, new_state}
   end
 
-  def handle_call(:render, _from, state) do
-    {:reply, do_render(state), state}
+  def handle_call(:snapshot, _from, state) do
+    {:reply, do_snapshot(state), state}
   end
 
   def handle_call({:send_message, message}, _from, state) do
@@ -168,12 +168,12 @@ defmodule CircuitsSim.I2C.I2CServer do
     state |> simple_write(data) |> simple_read(read_count, [])
   end
 
-  defp do_render(%{protocol: I2CDevice} = state) do
-    I2CDevice.render(state.device)
+  defp do_snapshot(%{protocol: I2CDevice} = state) do
+    I2CDevice.snapshot(state.device)
   end
 
-  defp do_render(%{protocol: SimpleI2CDevice} = state) do
-    SimpleI2CDevice.render(state.device)
+  defp do_snapshot(%{protocol: SimpleI2CDevice} = state) do
+    SimpleI2CDevice.snapshot(state.device)
   end
 
   defp do_send_message(%{protocol: I2CDevice} = state, message) do

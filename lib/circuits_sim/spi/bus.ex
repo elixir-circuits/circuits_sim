@@ -13,7 +13,7 @@ defmodule CircuitsSim.SPI.Bus do
 
   @spec render(t()) :: String.t()
   def render(%__MODULE__{} = bus) do
-    SPIServer.render(bus.bus_name)
+    SPIServer.snapshot(bus.bus_name)
     |> IO.ANSI.format()
     |> IO.chardata_to_string()
   end

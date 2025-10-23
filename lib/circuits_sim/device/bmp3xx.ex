@@ -185,7 +185,7 @@ defmodule CircuitsSim.Device.BMP3XX do
     end
 
     @impl SimpleI2CDevice
-    def render(state) do
+    def snapshot(state) do
       state
     end
 

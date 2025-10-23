@@ -80,7 +80,7 @@ defmodule CircuitsSim.Device.GPIOButton do
     def read(%{state: :released, connection: :internal_pulldown}), do: :hi_z
 
     @impl GPIODevice
-    def render(state) do
+    def snapshot(state) do
       state
     end
 

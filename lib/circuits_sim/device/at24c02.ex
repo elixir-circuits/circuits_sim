@@ -58,7 +58,7 @@ defmodule CircuitsSim.Device.AT24C02 do
     end
 
     @impl SimpleI2CDevice
-    def render(state) do
+    def snapshot(state) do
       state
     end
 

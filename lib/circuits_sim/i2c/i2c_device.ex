@@ -32,13 +32,13 @@ defprotocol CircuitsSim.I2C.I2CDevice do
   def write_read(dev, data, read_count)
 
   @doc """
-  Return the device struct for rendering
+  Return the device struct
 
   The returned struct should implement both `Kino.Render` for LiveBook visualization
   and `String.Chars` for CLI output.
   """
-  @spec render(t()) :: t()
-  def render(dev)
+  @spec snapshot(t()) :: t()
+  def snapshot(dev)
 
   @doc """
   Handle an user message
