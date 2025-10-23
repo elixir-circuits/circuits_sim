@@ -15,6 +15,7 @@
 
 if Code.ensure_loaded?(Kino) do
   defimpl Kino.Render, for: CircuitsSim.Device.GPIOButton do
+    @spec to_livebook(CircuitsSim.Device.GPIOButton.t()) :: Kino.HTML.t()
     def to_livebook(state) do
       # Create a visual representation of the button
       button_color = if state.state == :pressed, do: "#4CAF50", else: "#e0e0e0"
@@ -57,6 +58,7 @@ if Code.ensure_loaded?(Kino) do
   end
 
   defimpl Kino.Render, for: CircuitsSim.Device.GPIOLED do
+    @spec to_livebook(CircuitsSim.Device.GPIOLED.t()) :: Kino.HTML.t()
     def to_livebook(state) do
       led_color = if state.value == 1, do: "#FFD700", else: "#333333"
       led_status = if state.value == 1, do: "ON", else: "OFF"
@@ -91,6 +93,7 @@ if Code.ensure_loaded?(Kino) do
   end
 
   defimpl Kino.Render, for: CircuitsSim.Device.SHT4X do
+    @spec to_livebook(CircuitsSim.Device.SHT4X.t()) :: Kino.HTML.t()
     def to_livebook(state) do
       humidity_rh = Float.round(state.humidity_rh, 1)
       temperature_c = Float.round(state.temperature_c, 1)
@@ -148,6 +151,7 @@ if Code.ensure_loaded?(Kino) do
   end
 
   defimpl Kino.Render, for: CircuitsSim.Device.AHT20 do
+    @spec to_livebook(CircuitsSim.Device.AHT20.t()) :: Kino.HTML.t()
     def to_livebook(state) do
       humidity_rh = Float.round(state.humidity_rh, 1)
       temperature_c = Float.round(state.temperature_c, 1)
@@ -205,6 +209,7 @@ if Code.ensure_loaded?(Kino) do
   end
 
   defimpl Kino.Render, for: CircuitsSim.Device.SGP30 do
+    @spec to_livebook(CircuitsSim.Device.SGP30.t()) :: Kino.HTML.t()
     def to_livebook(state) do
       # Color coding for CO2 levels (green=good, yellow=elevated, red=poor)
       co2_color =
@@ -275,6 +280,7 @@ if Code.ensure_loaded?(Kino) do
   end
 
   defimpl Kino.Render, for: CircuitsSim.Device.VCNL4040 do
+    @spec to_livebook(CircuitsSim.Device.VCNL4040.t()) :: Kino.HTML.t()
     def to_livebook(state) do
       # Convert raw values to percentages for visual representation
       proximity_pct = min(100, trunc(state.proximity_raw / 655.35))
@@ -339,28 +345,18 @@ if Code.ensure_loaded?(Kino) do
   end
 
   defimpl Kino.Render, for: CircuitsSim.Device.VEML7700 do
+    @spec to_livebook(CircuitsSim.Device.VEML7700.t()) :: Kino.HTML.t()
     def to_livebook(state) do
       # Convert raw values to percentages for visual representation
       als_pct = min(100, trunc(state.als_output / 655.35))
       white_pct = min(100, trunc(state.white_output / 655.35))
 
       # Color coding based on light intensity
-      als_color =
-        cond do
-          als_pct > 70 -> "#FFD700"
-          als_pct > 30 -> "#FFA726"
-          true -> "#616161"
-        end
+      als_color = light_intensity_color(als_pct)
+      white_color = white_light_color(white_pct)
+      white_text_color = white_text_color(white_pct, white_color)
 
-      white_color =
-        cond do
-          white_pct > 70 -> "#FFFFFF"
-          white_pct > 30 -> "#E0E0E0"
-          true -> "#9E9E9E"
-        end
-
-      # Adjust text color for light backgrounds
-      white_text_color = if white_pct > 50, do: "#000000", else: white_color
+      {white_bg, white_border} = white_light_styling(white_pct, white_color)
 
       html = """
       <div style="padding: 20px; background: #f5f5f5; border-radius: 8px; font-family: system-ui;">
@@ -378,10 +374,10 @@ if Code.ensure_loaded?(Kino) do
           </div>
           <div style="
             padding: 20px;
-            background: #{if white_pct > 50, do: white_color, else: "white"};
+            background: #{white_bg};
             border-radius: 8px;
             border-left: 4px solid #{white_color};
-            #{if white_pct > 50, do: "border: 1px solid #ddd;", else: ""}
+            #{white_border}
           ">
             <div style="font-size: 0.9em; color: #666; margin-bottom: 5px;">White Light</div>
             <div style="font-size: 2em; font-weight: bold; color: #{white_text_color};">#{state.white_output}</div>
@@ -393,32 +389,29 @@ if Code.ensure_loaded?(Kino) do
 
       Kino.HTML.new(html) |> Kino.Render.to_livebook()
     end
+
+    defp light_intensity_color(pct) when pct > 70, do: "#FFD700"
+    defp light_intensity_color(pct) when pct > 30, do: "#FFA726"
+    defp light_intensity_color(_pct), do: "#616161"
+
+    defp white_light_color(pct) when pct > 70, do: "#FFFFFF"
+    defp white_light_color(pct) when pct > 30, do: "#E0E0E0"
+    defp white_light_color(_pct), do: "#9E9E9E"
+
+    defp white_text_color(pct, _white_color) when pct > 50, do: "#000000"
+    defp white_text_color(_pct, white_color), do: white_color
+
+    defp white_light_styling(pct, white_color) when pct > 50,
+      do: {white_color, "border: 1px solid #ddd;"}
+
+    defp white_light_styling(_pct, _white_color), do: {"white", ""}
   end
 
   defimpl Kino.Render, for: CircuitsSim.Device.BMP3XX do
+    @spec to_livebook(CircuitsSim.Device.BMP3XX.t()) :: Kino.HTML.t()
     def to_livebook(state) do
-      sensor_name =
-        case state.sensor_type do
-          :bmp380 -> "BMP380"
-          :bmp390 -> "BMP390"
-          :bmp180 -> "BMP180"
-          :bmp280 -> "BMP280"
-          :bme280 -> "BME280"
-          :bme680 -> "BME680"
-          _ -> "Unknown"
-        end
-
-      sensor_description =
-        case state.sensor_type do
-          type when type in [:bmp380, :bmp390, :bmp180, :bmp280] ->
-            "Pressure & Temperature Sensor"
-
-          type when type in [:bme280, :bme680] ->
-            "Pressure, Temperature & Humidity Sensor"
-
-          _ ->
-            "Sensor"
-        end
+      sensor_name = sensor_name(state.sensor_type)
+      sensor_description = sensor_description(state.sensor_type)
 
       html = """
       <div style="padding: 20px; background: #f5f5f5; border-radius: 8px; font-family: system-ui;">
@@ -436,5 +429,21 @@ if Code.ensure_loaded?(Kino) do
 
       Kino.HTML.new(html) |> Kino.Render.to_livebook()
     end
+
+    defp sensor_name(:bmp380), do: "BMP380"
+    defp sensor_name(:bmp390), do: "BMP390"
+    defp sensor_name(:bmp180), do: "BMP180"
+    defp sensor_name(:bmp280), do: "BMP280"
+    defp sensor_name(:bme280), do: "BME280"
+    defp sensor_name(:bme680), do: "BME680"
+    defp sensor_name(_), do: "Unknown"
+
+    defp sensor_description(type) when type in [:bmp380, :bmp390, :bmp180, :bmp280],
+      do: "Pressure & Temperature Sensor"
+
+    defp sensor_description(type) when type in [:bme280, :bme680],
+      do: "Pressure, Temperature & Humidity Sensor"
+
+    defp sensor_description(_), do: "Sensor"
   end
 end

@@ -162,6 +162,7 @@ defmodule CircuitsSim.Device.SGP30 do
   end
 
   defimpl String.Chars do
+    @spec to_string(CircuitsSim.Device.SGP30.t()) :: String.t()
     def to_string(state) do
       [
         "tvoc_ppb: #{state.tvoc_ppb}",

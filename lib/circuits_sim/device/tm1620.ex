@@ -246,6 +246,7 @@ defmodule CircuitsSim.Device.TM1620 do
   defimpl String.Chars do
     alias CircuitsSim.Device.TM1620
 
+    @spec to_string(TM1620.t()) :: String.t()
     def to_string(state) do
       [
         "Mode: #{state.digits} digits, #{14 - state.digits} segments\n",

@@ -10,6 +10,9 @@ if Code.ensure_loaded?(Kino) do
 
     These widgets allow you to interact with simulated devices directly from LiveBook.
     """
+    alias CircuitsSim.GPIO.GPIOServer
+    alias CircuitsSim.I2C.I2CServer
+    alias CircuitsSim.Device.{AHT20, GPIOButton, SGP30, SHT4X, VCNL4040, VEML7700}
 
     @doc """
     Create an interactive button widget for a GPIO button device.
@@ -18,15 +21,16 @@ if Code.ensure_loaded?(Kino) do
 
         CircuitsSim.Kino.button({:circuits_sim, "button1", 17})
     """
+    @spec button(GPIOServer.gpio_spec()) :: Kino.Control.t()
     def button(gpio_spec) do
       # Single button that does press + release
       btn = Kino.Control.button("Push Button")
 
       # Handle button click - press, brief delay, then release
       Kino.listen(btn, fn _event ->
-        CircuitsSim.Device.GPIOButton.press(gpio_spec)
+        GPIOButton.press(gpio_spec)
         Process.sleep(100)
-        CircuitsSim.Device.GPIOButton.release(gpio_spec)
+        GPIOButton.release(gpio_spec)
       end)
 
       btn
@@ -39,27 +43,29 @@ if Code.ensure_loaded?(Kino) do
 
         CircuitsSim.Kino.led({:circuits_sim, "led1", 27})
     """
+    @spec led(GPIOServer.gpio_spec(), non_neg_integer()) :: Kino.Frame.t()
     def led(gpio_spec, interval \\ 10) do
       frame = Kino.Frame.new()
 
       # Initial display
-      state = CircuitsSim.GPIO.GPIOServer.render(gpio_spec)
+      state = GPIOServer.render(gpio_spec)
       Kino.Frame.render(frame, state)
 
       # Start auto-update loop that only renders on state change
-      spawn(fn ->
-        Stream.interval(interval)
-        |> Stream.scan(nil, fn _, prev_state ->
-          current_state = CircuitsSim.GPIO.GPIOServer.render(gpio_spec)
 
-          # Only render if state changed
-          if current_state != prev_state do
-            Kino.Frame.render(frame, current_state)
-          end
+      Stream.interval(interval)
+      |> Stream.scan({nil, nil}, fn _, {_, prev} ->
+        current_state = GPIOServer.render(gpio_spec)
+        {prev, current_state}
+      end)
+      |> Kino.listen(fn
+        {same, same} ->
+          :ok
 
-          current_state
-        end)
-        |> Stream.run()
+        {_, now} ->
+          Kino.Frame.render(frame, now)
+
+          :ok
       end)
 
       frame
@@ -72,6 +78,7 @@ if Code.ensure_loaded?(Kino) do
 
         CircuitsSim.Kino.sht4x("i2c-1", 0x44)
     """
+    @spec sht4x(String.t(), 0..127) :: Kino.Layout.t()
     def sht4x(bus_name, address) do
       frame = Kino.Frame.new()
 
@@ -83,7 +90,7 @@ if Code.ensure_loaded?(Kino) do
 
       # Update display
       update_display = fn ->
-        state = CircuitsSim.I2C.I2CServer.render(bus_name, address)
+        state = I2CServer.render(bus_name, address)
 
         if state != [] do
           Kino.Frame.render(frame, state)
@@ -95,12 +102,12 @@ if Code.ensure_loaded?(Kino) do
 
       # Update on slider changes
       Kino.listen(temp_input, fn %{value: temp} ->
-        CircuitsSim.Device.SHT4X.set_temperature_c(bus_name, address, temp)
+        SHT4X.set_temperature_c(bus_name, address, temp)
         update_display.()
       end)
 
       Kino.listen(humidity_input, fn %{value: humidity} ->
-        CircuitsSim.Device.SHT4X.set_humidity_rh(bus_name, address, humidity)
+        SHT4X.set_humidity_rh(bus_name, address, humidity)
         update_display.()
       end)
 
@@ -114,6 +121,7 @@ if Code.ensure_loaded?(Kino) do
 
         CircuitsSim.Kino.aht20("i2c-1", 0x44)
     """
+    @spec aht20(String.t(), 0..127) :: Kino.Layout.t()
     def aht20(bus_name, address) do
       frame = Kino.Frame.new()
 
@@ -125,7 +133,7 @@ if Code.ensure_loaded?(Kino) do
 
       # Update display
       update_display = fn ->
-        state = CircuitsSim.I2C.I2CServer.render(bus_name, address)
+        state = I2CServer.render(bus_name, address)
 
         if state != [] do
           Kino.Frame.render(frame, state)
@@ -137,12 +145,12 @@ if Code.ensure_loaded?(Kino) do
 
       # Update on slider changes
       Kino.listen(temp_input, fn %{value: temp} ->
-        CircuitsSim.Device.AHT20.set_temperature_c(bus_name, address, temp)
+        AHT20.set_temperature_c(bus_name, address, temp)
         update_display.()
       end)
 
       Kino.listen(humidity_input, fn %{value: humidity} ->
-        CircuitsSim.Device.AHT20.set_humidity_rh(bus_name, address, humidity)
+        AHT20.set_humidity_rh(bus_name, address, humidity)
         update_display.()
       end)
 
@@ -156,6 +164,7 @@ if Code.ensure_loaded?(Kino) do
 
         CircuitsSim.Kino.sgp30("i2c-1", 0x58)
     """
+    @spec sgp30(String.t(), 0..127) :: Kino.Layout.t()
     def sgp30(bus_name, address) do
       frame = Kino.Frame.new()
 
@@ -174,7 +183,7 @@ if Code.ensure_loaded?(Kino) do
 
       # Update display
       update_display = fn ->
-        state = CircuitsSim.I2C.I2CServer.render(bus_name, address)
+        state = I2CServer.render(bus_name, address)
 
         if state != [] do
           Kino.Frame.render(frame, state)
@@ -186,22 +195,22 @@ if Code.ensure_loaded?(Kino) do
 
       # Update on slider changes
       Kino.listen(co2_input, fn %{value: co2} ->
-        CircuitsSim.Device.SGP30.set_co2_eq_ppm(bus_name, address, trunc(co2))
+        SGP30.set_co2_eq_ppm(bus_name, address, trunc(co2))
         update_display.()
       end)
 
       Kino.listen(tvoc_input, fn %{value: tvoc} ->
-        CircuitsSim.Device.SGP30.set_tvoc_ppb(bus_name, address, trunc(tvoc))
+        SGP30.set_tvoc_ppb(bus_name, address, trunc(tvoc))
         update_display.()
       end)
 
       Kino.listen(h2_input, fn %{value: h2} ->
-        CircuitsSim.Device.SGP30.set_h2_raw(bus_name, address, trunc(h2))
+        SGP30.set_h2_raw(bus_name, address, trunc(h2))
         update_display.()
       end)
 
       Kino.listen(ethanol_input, fn %{value: ethanol} ->
-        CircuitsSim.Device.SGP30.set_ethanol_raw(bus_name, address, trunc(ethanol))
+        SGP30.set_ethanol_raw(bus_name, address, trunc(ethanol))
         update_display.()
       end)
 
@@ -215,6 +224,7 @@ if Code.ensure_loaded?(Kino) do
 
         CircuitsSim.Kino.vcnl4040("i2c-1", 0x60)
     """
+    @spec vcnl4040(String.t(), 0..127) :: Kino.Layout.t()
     def vcnl4040(bus_name, address) do
       frame = Kino.Frame.new()
 
@@ -230,7 +240,7 @@ if Code.ensure_loaded?(Kino) do
 
       # Update display
       update_display = fn ->
-        state = CircuitsSim.I2C.I2CServer.render(bus_name, address)
+        state = I2CServer.render(bus_name, address)
 
         if state != [] do
           Kino.Frame.render(frame, state)
@@ -242,17 +252,17 @@ if Code.ensure_loaded?(Kino) do
 
       # Update on slider changes
       Kino.listen(proximity_input, fn %{value: proximity} ->
-        CircuitsSim.Device.VCNL4040.set_proximity(bus_name, address, trunc(proximity))
+        VCNL4040.set_proximity(bus_name, address, trunc(proximity))
         update_display.()
       end)
 
       Kino.listen(ambient_input, fn %{value: ambient} ->
-        CircuitsSim.Device.VCNL4040.set_ambient_light(bus_name, address, trunc(ambient))
+        VCNL4040.set_ambient_light(bus_name, address, trunc(ambient))
         update_display.()
       end)
 
       Kino.listen(white_input, fn %{value: white} ->
-        CircuitsSim.Device.VCNL4040.set_white_light(bus_name, address, trunc(white))
+        VCNL4040.set_white_light(bus_name, address, trunc(white))
         update_display.()
       end)
 
@@ -266,6 +276,7 @@ if Code.ensure_loaded?(Kino) do
 
         CircuitsSim.Kino.veml7700("i2c-1", 0x48)
     """
+    @spec veml7700(String.t(), 0..127) :: Kino.Layout.t()
     def veml7700(bus_name, address) do
       frame = Kino.Frame.new()
 
@@ -278,7 +289,7 @@ if Code.ensure_loaded?(Kino) do
 
       # Update display
       update_display = fn ->
-        state = CircuitsSim.I2C.I2CServer.render(bus_name, address)
+        state = I2CServer.render(bus_name, address)
 
         if state != [] do
           Kino.Frame.render(frame, state)
@@ -290,12 +301,12 @@ if Code.ensure_loaded?(Kino) do
 
       # Update on slider changes
       Kino.listen(als_input, fn %{value: als} ->
-        CircuitsSim.Device.VEML7700.set_state(bus_name, address, als_output: trunc(als))
+        VEML7700.set_state(bus_name, address, als_output: trunc(als))
         update_display.()
       end)
 
       Kino.listen(white_input, fn %{value: white} ->
-        CircuitsSim.Device.VEML7700.set_state(bus_name, address, white_output: trunc(white))
+        VEML7700.set_state(bus_name, address, white_output: trunc(white))
         update_display.()
       end)
 

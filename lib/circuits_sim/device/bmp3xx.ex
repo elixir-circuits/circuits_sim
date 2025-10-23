@@ -196,6 +196,7 @@ defmodule CircuitsSim.Device.BMP3XX do
   end
 
   defimpl String.Chars do
+    @spec to_string(CircuitsSim.Device.BMP3XX.t()) :: String.t()
     def to_string(state) do
       "Sensor type: #{state.sensor_type}"
     end

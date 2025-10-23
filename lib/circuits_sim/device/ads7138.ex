@@ -103,6 +103,7 @@ defmodule CircuitsSim.Device.ADS7138 do
   defimpl String.Chars do
     alias CircuitsSim.Tools
 
+    @spec to_string(CircuitsSim.Device.ADS7138.t()) :: String.t()
     def to_string(state) do
       for {reg, data} <- state.registers, into: [] do
         [

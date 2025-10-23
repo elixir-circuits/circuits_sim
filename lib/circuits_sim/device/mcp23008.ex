@@ -123,6 +123,7 @@ defmodule CircuitsSim.Device.MCP23008 do
   end
 
   defimpl String.Chars do
+    @spec to_string(CircuitsSim.Device.MCP23008.t()) :: String.t()
     def to_string(state) do
       {pin, io, values} =
         for i <- 7..0//-1 do

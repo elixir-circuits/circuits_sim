@@ -71,6 +71,7 @@ defmodule CircuitsSim.Device.AT24C02 do
   defimpl String.Chars do
     alias CircuitsSim.Tools
 
+    @spec to_string(CircuitsSim.Device.AT24C02.t()) :: String.t()
     def to_string(state) do
       header = for i <- 0..15, do: ["  ", Integer.to_string(i, 16)]
 
