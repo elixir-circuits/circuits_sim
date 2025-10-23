@@ -138,7 +138,7 @@ defmodule CircuitsSim.Device.SHT4X do
     defp trim_pad(x, count), do: x <> :binary.copy(<<0>>, count - byte_size(x))
 
     @impl I2CDevice
-    def render(state) do
+    def snapshot(state) do
       state
     end
 

@@ -112,7 +112,7 @@ defmodule CircuitsSim.Device.MCP23008 do
     def read_register(state, _other), do: {0, state}
 
     @impl SimpleI2CDevice
-    def render(state) do
+    def snapshot(state) do
       state
     end
 

@@ -26,7 +26,7 @@ defmodule CircuitsSim.Device.AT24C02Test do
         SimpleI2CDevice.write_register(acc, i, i)
       end)
 
-    actual = SimpleI2CDevice.render(eeprom) |> to_string()
+    actual = SimpleI2CDevice.snapshot(eeprom) |> to_string()
 
     expected = """
          0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F

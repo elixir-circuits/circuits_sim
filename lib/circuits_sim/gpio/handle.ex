@@ -16,7 +16,7 @@ defmodule CircuitsSim.GPIO.Handle do
 
   @spec render(t()) :: String.t()
   def render(%__MODULE__{} = handle) do
-    GPIOServer.render(handle.gpio_spec)
+    GPIOServer.snapshot(handle.gpio_spec)
     |> IO.ANSI.format()
     |> IO.chardata_to_string()
   end

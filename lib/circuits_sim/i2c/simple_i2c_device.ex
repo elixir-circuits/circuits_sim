@@ -20,10 +20,10 @@ defprotocol CircuitsSim.I2C.SimpleI2CDevice do
   def read_register(dev, reg)
 
   @doc """
-  Return a pretty printable view the the state
+  Return the device struct
   """
-  @spec render(t()) :: IO.ANSI.ansidata()
-  def render(dev)
+  @spec snapshot(t()) :: t()
+  def snapshot(dev)
 
   @doc """
   Handle an user message

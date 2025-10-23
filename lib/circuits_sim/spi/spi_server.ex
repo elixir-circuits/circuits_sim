@@ -74,9 +74,9 @@ defmodule CircuitsSim.SPI.SPIServer do
       {:ok, junk}
   end
 
-  @spec render(String.t()) :: IO.ANSI.ansidata()
-  def render(bus_name) do
-    gen_call(bus_name, :render)
+  @spec snapshot(String.t()) :: IO.ANSI.ansidata()
+  def snapshot(bus_name) do
+    gen_call(bus_name, :snapshot)
   end
 
   @spec send_message(String.t(), any()) :: any()
@@ -97,8 +97,8 @@ defmodule CircuitsSim.SPI.SPIServer do
     {:reply, result, %{state | device: new_device}}
   end
 
-  def handle_call(:render, _from, state) do
-    {:reply, SPIDevice.render(state.device), state}
+  def handle_call(:snapshot, _from, state) do
+    {:reply, SPIDevice.snapshot(state.device), state}
   end
 
   def handle_call({:send_message, message}, _from, state) do

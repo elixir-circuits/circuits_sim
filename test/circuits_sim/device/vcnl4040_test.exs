@@ -17,7 +17,7 @@ defmodule CircuitsSim.Device.VCNL4040Test do
     i2c_bus = to_string(test_name)
     start_supervised!({VCNL4040Sim, bus_name: i2c_bus, address: @i2c_address})
 
-    rendered = I2CServer.render(i2c_bus, @i2c_address)
+    rendered = I2CServer.snapshot(i2c_bus, @i2c_address)
 
     assert to_string(rendered) ==
              "Ambient light sensor output\n\nProximity: 0\nAmbient Light: 0\nWhite Light: 0\n"

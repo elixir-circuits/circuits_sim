@@ -16,7 +16,7 @@ defmodule CircuitsSim.I2C.Bus do
   @spec render(t()) :: String.t()
   def render(%__MODULE__{} = bus) do
     for address <- 0..127 do
-      info = I2CServer.render(bus.bus_name, address)
+      info = I2CServer.snapshot(bus.bus_name, address)
       hex_addr = Tools.hex_byte(address)
       if info != [], do: ["Device 0x#{hex_addr}: \n", info, "\n"], else: []
     end

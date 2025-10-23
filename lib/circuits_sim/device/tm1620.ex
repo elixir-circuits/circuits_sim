@@ -233,7 +233,7 @@ defmodule CircuitsSim.Device.TM1620 do
     end
 
     @impl SPIDevice
-    def render(state) do
+    def snapshot(state) do
       state
     end
 

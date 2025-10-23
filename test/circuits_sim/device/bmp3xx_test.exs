@@ -14,7 +14,7 @@ defmodule CircuitsSim.Device.BMP3XXTest do
     i2c_bus = to_string(test_name)
     start_supervised!({BMP3XXSim, bus_name: i2c_bus, address: @i2c_address, sensor_type: :bme680})
 
-    rendered = I2CServer.render(i2c_bus, @i2c_address)
+    rendered = I2CServer.snapshot(i2c_bus, @i2c_address)
     assert to_string(rendered) == "Sensor type: bme680"
   end
 

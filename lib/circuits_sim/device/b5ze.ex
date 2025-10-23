@@ -38,7 +38,7 @@ defmodule CircuitsSim.Device.B5ZE do
     def read_register(state, reg), do: {state.registers[reg], state}
 
     @impl SimpleI2CDevice
-    def render(state) do
+    def snapshot(state) do
       state
     end
 

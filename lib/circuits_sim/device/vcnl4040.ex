@@ -207,7 +207,7 @@ defmodule CircuitsSim.Device.VCNL4040 do
     end
 
     @impl I2CDevice
-    def render(state) do
+    def snapshot(state) do
       state
     end
 
