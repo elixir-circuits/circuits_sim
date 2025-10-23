@@ -21,7 +21,7 @@ if Code.ensure_loaded?(Kino) do
 
         CircuitsSim.Kino.button({:circuits_sim, "button1", 17})
     """
-    @spec button(GPIOServer.gpio_spec()) :: Kino.Control.t()
+    @spec button(Circuits.GPIO.gpio_spec()) :: Kino.Control.t()
     def button(gpio_spec) do
       # Single button that does press + release
       btn = Kino.Control.button("Push Button")
@@ -43,7 +43,7 @@ if Code.ensure_loaded?(Kino) do
 
         CircuitsSim.Kino.led({:circuits_sim, "led1", 27})
     """
-    @spec led(GPIOServer.gpio_spec(), non_neg_integer()) :: Kino.Frame.t()
+    @spec led(Circuits.GPIO.gpio_spec(), non_neg_integer()) :: Kino.Frame.t()
     def led(gpio_spec, interval \\ 10) do
       frame = Kino.Frame.new()
 
