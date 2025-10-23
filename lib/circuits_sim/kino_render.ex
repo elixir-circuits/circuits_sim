@@ -15,7 +15,7 @@
 
 if Code.ensure_loaded?(Kino) do
   defimpl Kino.Render, for: CircuitsSim.Device.GPIOButton do
-    @spec to_livebook(CircuitsSim.Device.GPIOButton.t()) :: Kino.HTML.t()
+    @spec to_livebook(CircuitsSim.Device.GPIOButton.t()) :: map()
     def to_livebook(state) do
       # Create a visual representation of the button
       button_color = if state.state == :pressed, do: "#4CAF50", else: "#e0e0e0"
@@ -58,7 +58,7 @@ if Code.ensure_loaded?(Kino) do
   end
 
   defimpl Kino.Render, for: CircuitsSim.Device.GPIOLED do
-    @spec to_livebook(CircuitsSim.Device.GPIOLED.t()) :: Kino.HTML.t()
+    @spec to_livebook(CircuitsSim.Device.GPIOLED.t()) :: map()
     def to_livebook(state) do
       led_color = if state.value == 1, do: "#FFD700", else: "#333333"
       led_status = if state.value == 1, do: "ON", else: "OFF"
@@ -93,7 +93,7 @@ if Code.ensure_loaded?(Kino) do
   end
 
   defimpl Kino.Render, for: CircuitsSim.Device.SHT4X do
-    @spec to_livebook(CircuitsSim.Device.SHT4X.t()) :: Kino.HTML.t()
+    @spec to_livebook(CircuitsSim.Device.SHT4X.t()) :: map()
     def to_livebook(state) do
       humidity_rh = Float.round(state.humidity_rh, 1)
       temperature_c = Float.round(state.temperature_c, 1)
@@ -151,7 +151,7 @@ if Code.ensure_loaded?(Kino) do
   end
 
   defimpl Kino.Render, for: CircuitsSim.Device.AHT20 do
-    @spec to_livebook(CircuitsSim.Device.AHT20.t()) :: Kino.HTML.t()
+    @spec to_livebook(CircuitsSim.Device.AHT20.t()) :: map()
     def to_livebook(state) do
       humidity_rh = Float.round(state.humidity_rh, 1)
       temperature_c = Float.round(state.temperature_c, 1)
@@ -209,7 +209,7 @@ if Code.ensure_loaded?(Kino) do
   end
 
   defimpl Kino.Render, for: CircuitsSim.Device.SGP30 do
-    @spec to_livebook(CircuitsSim.Device.SGP30.t()) :: Kino.HTML.t()
+    @spec to_livebook(CircuitsSim.Device.SGP30.t()) :: map()
     def to_livebook(state) do
       # Color coding for CO2 levels (green=good, yellow=elevated, red=poor)
       co2_color =
@@ -280,7 +280,7 @@ if Code.ensure_loaded?(Kino) do
   end
 
   defimpl Kino.Render, for: CircuitsSim.Device.VCNL4040 do
-    @spec to_livebook(CircuitsSim.Device.VCNL4040.t()) :: Kino.HTML.t()
+    @spec to_livebook(CircuitsSim.Device.VCNL4040.t()) :: map()
     def to_livebook(state) do
       # Convert raw values to percentages for visual representation
       proximity_pct = min(100, trunc(state.proximity_raw / 655.35))
@@ -345,7 +345,7 @@ if Code.ensure_loaded?(Kino) do
   end
 
   defimpl Kino.Render, for: CircuitsSim.Device.VEML7700 do
-    @spec to_livebook(CircuitsSim.Device.VEML7700.t()) :: Kino.HTML.t()
+    @spec to_livebook(CircuitsSim.Device.VEML7700.t()) :: map()
     def to_livebook(state) do
       # Convert raw values to percentages for visual representation
       als_pct = min(100, trunc(state.als_output / 655.35))
@@ -408,7 +408,7 @@ if Code.ensure_loaded?(Kino) do
   end
 
   defimpl Kino.Render, for: CircuitsSim.Device.BMP3XX do
-    @spec to_livebook(CircuitsSim.Device.BMP3XX.t()) :: Kino.HTML.t()
+    @spec to_livebook(CircuitsSim.Device.BMP3XX.t()) :: map()
     def to_livebook(state) do
       sensor_name = sensor_name(state.sensor_type)
       sensor_description = sensor_description(state.sensor_type)
