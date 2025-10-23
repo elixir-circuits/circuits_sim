@@ -52,6 +52,7 @@ defmodule CircuitsSim.Device.GPIOLED do
   end
 
   defimpl String.Chars do
+    @spec to_string(CircuitsSim.Device.GPIOLED.t()) :: String.t()
     def to_string(state) do
       status = if state.value == 1, do: "on", else: "off"
       "LED #{status}"

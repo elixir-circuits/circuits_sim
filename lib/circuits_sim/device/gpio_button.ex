@@ -106,6 +106,7 @@ defmodule CircuitsSim.Device.GPIOButton do
   end
 
   defimpl String.Chars do
+    @spec to_string(CircuitsSim.Device.GPIOButton.t()) :: String.t()
     def to_string(state) do
       "Button #{state.state} connected with #{state.connection}"
     end

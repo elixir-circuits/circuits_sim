@@ -188,6 +188,7 @@ defmodule CircuitsSim.Device.SHT4X do
   end
 
   defimpl String.Chars do
+    @spec to_string(CircuitsSim.Device.SHT4X.t()) :: String.t()
     def to_string(state) do
       humidity_rh = Float.round(state.humidity_rh, 3)
       temperature_c = Float.round(state.temperature_c, 3)

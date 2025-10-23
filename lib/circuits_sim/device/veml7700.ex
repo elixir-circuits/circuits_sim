@@ -140,6 +140,7 @@ defmodule CircuitsSim.Device.VEML7700 do
   end
 
   defimpl String.Chars do
+    @spec to_string(CircuitsSim.Device.VEML7700.t()) :: String.t()
     def to_string(state) do
       "Ambient light sensor raw output: #{state.als_output}"
     end

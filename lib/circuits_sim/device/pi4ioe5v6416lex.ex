@@ -52,6 +52,7 @@ defmodule CircuitsSim.Device.PI4IOE5V6416LEX do
   defimpl String.Chars do
     alias CircuitsSim.Tools
 
+    @spec to_string(CircuitsSim.Device.PI4IOE5V6416LEX.t()) :: String.t()
     def to_string(state) do
       for {reg, data} <- state.registers do
         [
