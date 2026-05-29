@@ -10,9 +10,9 @@ if Code.ensure_loaded?(Kino) do
 
     These widgets allow you to interact with simulated devices directly from LiveBook.
     """
+    alias CircuitsSim.Device.{AHT20, GPIOButton, SGP30, SHT4X, VCNL4040, VEML7700}
     alias CircuitsSim.GPIO.GPIOServer
     alias CircuitsSim.I2C.I2CServer
-    alias CircuitsSim.Device.{AHT20, GPIOButton, SGP30, SHT4X, VCNL4040, VEML7700}
 
     @doc """
     Create an interactive button widget for a GPIO button device.

@@ -102,12 +102,15 @@ defmodule CircuitsSim.I2C.I2CServer do
     {:ok, %__MODULE__{device: device, protocol: protocol, register: 0}}
   end
 
-  # Seems like there ought to have been a better way to write this...
+  # Seems like there ought to have been a better way to write this.
+  # Module.concat/2 can't be converted to Module.safe_concat/2 since there's
+  # a chicken-and-egg with loading the module.
   defp protocol_for(s) do
     known_protocols = [I2CDevice, SimpleI2CDevice]
 
     protocol =
       Enum.find(known_protocols, fn p ->
+        # credo:disable-for-next-line Credo.Check.Warning.UnsafeToAtom
         impl = Module.concat(p, s.__struct__)
         {:module, impl} == Code.ensure_loaded(impl)
       end)
