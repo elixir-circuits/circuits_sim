@@ -101,12 +101,13 @@ defmodule CircuitsSim.Device.TM1620 do
   @spec seven_segment(binary()) :: IO.ANSI.ansidata()
   def seven_segment(data) do
     for row <- 0..2 do
-      [
-        for <<grid::2-bytes <- data>> do
-          for col <- 0..3, do: seg({row, col}, grid)
-        end,
-        ?\n
-      ]
+      [render_digit_row(row, data), ?\n]
+    end
+  end
+
+  defp render_digit_row(row, data) do
+    for <<grid::2-bytes <- data>> do
+      for col <- 0..3, do: seg({row, col}, grid)
     end
   end
 
