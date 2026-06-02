@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 defmodule CircuitsSim.Application do
-  # See https://hexdocs.pm/elixir/Application.html
+  # See https://elixir.hexdocs.pm/Application.html
   # for more information on OTP Applications
   @moduledoc false
 
