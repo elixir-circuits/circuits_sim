@@ -91,7 +91,7 @@ defmodule CircuitsSim.Device.TM1620 do
   end
 
   defp put_byte(data, index, value) do
-    <<pre::binary-size(index), _, post::binary>> = data
+    <<pre::binary-size(^index), _, post::binary>> = data
     <<pre::binary, value, post::binary>>
   end
 
